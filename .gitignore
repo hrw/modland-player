@@ -1,0 +1,6 @@
+hrwplayer
+*.o
+Makefile
+moc_*
+ui_*
+.*
