@@ -17,11 +17,14 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 	~HrwPlayer();
 
     public slots:
-	void OpenFileName();
+        void OpenFileName();
 
     private:
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
 	Phonon::AudioOutput *audioOutput;
+
+    private slots:
+    void StateChanged(Phonon::State newState, Phonon::State oldState);
 
 };

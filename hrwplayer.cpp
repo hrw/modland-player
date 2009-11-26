@@ -1,4 +1,5 @@
 #include <QFileInfo>
+#include <QMessageBox>
 
 #include "hrwplayer.h"
 
@@ -17,8 +18,8 @@ HrwPlayer::HrwPlayer()
     Phonon::createPath(mediaObject, audioOutput);
 
 //    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
-//    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-//            this, SLOT(stateChanged(Phonon::State,Phonon::State)));
+    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
+	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
 //    connect(metaInformationResolver, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
 //            this, SLOT(metaStateChanged(Phonon::State,Phonon::State)));
 //    connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
@@ -45,5 +46,43 @@ void HrwPlayer::OpenFileName()
 	mediaObject->setCurrentSource(fileName);
 	QFileInfo fileinfo(fileName);
 	TitleLabel->setText(fileinfo.baseName());
+    }
+}
+
+void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
+{
+    switch (newState) {
+        case Phonon::ErrorState:
+            if (mediaObject->errorType() == Phonon::FatalError) {
+                QMessageBox::warning(this, tr("Fatal Error"),
+                mediaObject->errorString());
+            } else {
+                QMessageBox::warning(this, tr("Error"),
+                mediaObject->errorString());
+            }
+            break;
+//![9]
+//![10]
+        case Phonon::PlayingState:
+                PlayButton->setEnabled(false);
+                PauseButton->setEnabled(true);
+                StopButton->setEnabled(true);
+                break;
+        case Phonon::StoppedState:
+                StopButton->setEnabled(false);
+                PlayButton->setEnabled(true);
+                PauseButton->setEnabled(false);
+//                timeLcd->display("00:00");
+                break;
+        case Phonon::PausedState:
+                PauseButton->setEnabled(false);
+                StopButton->setEnabled(true);
+                PlayButton->setEnabled(true);
+                break;
+//![10]
+        case Phonon::BufferingState:
+                break;
+        default:
+            ;
     }
 }

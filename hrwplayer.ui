@@ -48,7 +48,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QListWidget" name="SongsList"/>
+     <widget class="QListView" name="SongsList"/>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
