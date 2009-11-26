@@ -110,10 +110,20 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
 
 void HrwPlayer::FinishedPlaying()
 {
-    QListWidgetItem* selectedItem =  SongsList->item(SongsList->currentRow() + 1);
+    QListWidgetItem* selectedItem;
+
+    if(SongsList->currentRow() == (SongsList->count() - 1))
+    {
+	selectedItem = SongsList->item(0);
+	SongsList->setCurrentRow(0);
+    }
+    else
+    {
+	selectedItem =  SongsList->item(SongsList->currentRow() + 1);
+	SongsList->setCurrentRow(SongsList->currentRow() + 1);
+    }
 
     PlaySelected(selectedItem);
-    SongsList->setCurrentRow(SongsList->currentRow() + 1);
 }
 
 void HrwPlayer::tick(qint64 time)
