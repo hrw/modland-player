@@ -8,12 +8,12 @@
 
 #include "ui_hrwplayer.h"
 
-class HrwPlayer:public QWidget, public Ui_HrwPlayer
+class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 {
     Q_OBJECT
 
     public:
-	HrwPlayer(QWidget *parent = 0);
+	HrwPlayer();
 	~HrwPlayer();
 
     public slots:

@@ -4,7 +4,7 @@
 
 QString moduleFileName = "../daydreams2.mod";
 
-HrwPlayer::HrwPlayer(QWidget *parent):QWidget(parent)
+HrwPlayer::HrwPlayer()
 {
     setupUi(this);
 
@@ -44,6 +44,6 @@ void HrwPlayer::OpenFileName()
     {
 	mediaObject->setCurrentSource(fileName);
 	QFileInfo fileinfo(fileName);
-	songTitle->setText(fileinfo.baseName());
+	TitleLabel->setText(fileinfo.baseName());
     }
 }
