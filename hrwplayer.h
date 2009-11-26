@@ -26,5 +26,8 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);
+    void PlaySelected(QListWidgetItem* selectedItem);
+    void FinishedPlaying();
+    void tick(qint64 time);
 
 };
