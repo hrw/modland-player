@@ -53,16 +53,6 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="Phonon::VideoPlayer" name="videoPlayer">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="acceptDrops">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="Phonon::SeekSlider" name="seekSlider"/>
          </item>
          <item>
@@ -85,11 +75,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Phonon::VideoPlayer</class>
-   <extends>QWidget</extends>
-   <header location="global">phonon/videoplayer.h</header>
-  </customwidget>
-  <customwidget>
    <class>Phonon::SeekSlider</class>
    <extends>QWidget</extends>
    <header location="global">phonon/seekslider.h</header>
@@ -101,54 +86,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>StopButton</sender>
-   <signal>clicked()</signal>
-   <receiver>videoPlayer</receiver>
-   <slot>stop()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>454</x>
-     <y>76</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>384</x>
-     <y>326</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>PauseButton</sender>
-   <signal>clicked()</signal>
-   <receiver>videoPlayer</receiver>
-   <slot>pause()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>305</x>
-     <y>74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>384</x>
-     <y>326</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>PlayButton</sender>
-   <signal>clicked()</signal>
-   <receiver>videoPlayer</receiver>
-   <slot>play()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>193</x>
-     <y>74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>384</x>
-     <y>326</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

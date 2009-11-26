@@ -25,10 +25,13 @@ HrwPlayer::HrwPlayer(QWidget *parent):QWidget(parent)
 //            this, SLOT(sourceChanged(Phonon::MediaSource)));
 //    connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
 
-    connect(LoadButton, SIGNAL(clicked()), this, SLOT(OpenFileName()));
+    connect(LoadButton,  SIGNAL(clicked()), this,        SLOT(OpenFileName()));
+    connect(PlayButton,  SIGNAL(clicked()), mediaObject, SLOT(play()));
+    connect(PauseButton, SIGNAL(clicked()), mediaObject, SLOT(pause()) );
+    connect(StopButton,  SIGNAL(clicked()), mediaObject, SLOT(stop()));
 
-    seekSlider->setMediaObject(videoPlayer->mediaObject());
-    volumeSlider->setAudioOutput(videoPlayer->audioOutput());
+    seekSlider->setMediaObject(mediaObject);
+    volumeSlider->setAudioOutput(audioOutput);
 };
 
 HrwPlayer::~HrwPlayer() {};
@@ -39,7 +42,7 @@ void HrwPlayer::OpenFileName()
 
     if (!fileName.isEmpty())
     {
-	videoPlayer->load(fileName);
+	mediaObject->setCurrentSource(fileName);
 	QFileInfo fileinfo(fileName);
 	songTitle->setText(fileinfo.baseName());
     }
