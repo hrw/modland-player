@@ -134,11 +134,7 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
 void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 {
     CurrentAuthor = selectedItem->text();
-    QString songsquery = "SELECT title FROM songs WHERE author = '";  
-
-    songsquery.append(CurrentAuthor);
-    songsquery.append("' ORDER BY title");
-    QSqlQuery query(songsquery);
+    QSqlQuery query("SELECT title FROM songs WHERE author = '" + CurrentAuthor + "' ORDER BY title");
 
     QStringList songs;
     while (query.next()) {
@@ -179,8 +175,7 @@ bool HrwPlayer::FetchSong(QString fileName)
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
 
-    QString urlSong = "ftp://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/Protracker/" ;
-    urlSong.append(fileName);
+    QString urlSong = "ftp://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/Protracker/" + fileName ;
 
     qDebug() << "FetchSong - module to fetch: " << urlSong ;
 
@@ -228,10 +223,7 @@ QString HrwPlayer::buildModuleName(QString title, bool localName)
     if(localName)
 	fullName.append("modules/");
 
-    fullName.append(CurrentAuthor);
-    fullName.append("/");
-    fullName.append(title);
-    fullName.append(".mod");
+    fullName + CurrentAuthor + "/" + title + ".mod";
 
     return fullName;
 }
