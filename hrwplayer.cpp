@@ -1,9 +1,3 @@
-#include <QFileInfo>
-#include <QMessageBox>
-#include <QDir>
-#include <QTime>
-#include <QtSql>
-
 #include "hrwplayer.h"
 
 QString moduleFileName;
@@ -114,15 +108,25 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
 
 void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
 {
-    QString fileName = "Jester/";
-    fileName.append(selectedItem->text());
-    fileName.append(".mod");
-    mediaObject->setCurrentSource(fileName);
-    QFileInfo fileinfo(fileName);
-    TitleLabel->setText(fileinfo.baseName());
+    QString fileName = buildModuleName(selectedItem->text());
 
-    TimeLabel->setText("00:00");
-    mediaObject->play();
+    qDebug() << "PlaySelected - module to play: " << fileName ;
+
+    if(!QFile::exists(fileName))
+    {
+	qDebug() << "PlaySelected - module not available";
+
+	FetchSong(buildModuleName(selectedItem->text(), FALSE));
+    }
+    else
+    {
+	mediaObject->setCurrentSource(fileName);
+	QFileInfo fileinfo(fileName);
+	TitleLabel->setText(fileinfo.baseName());
+
+	TimeLabel->setText("00:00");
+	mediaObject->play();
+    }
 }
 
 void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
@@ -166,4 +170,71 @@ void HrwPlayer::tick(qint64 time)
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
     TimeLabel->setText(displayTime.toString("mm:ss"));
+}
+
+bool HrwPlayer::FetchSong(QString fileName)
+{
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+
+    QString urlSong = "ftp://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/Protracker/" ;
+    urlSong.append(fileName);
+
+    qDebug() << "FetchSong - module to fetch: " << urlSong ;
+
+    manager->get(QNetworkRequest(QUrl(urlSong)));
+
+    return 1;
+}
+
+
+void HrwPlayer::downloadFinished(QNetworkReply *reply)
+{
+    QUrl url = reply->url();
+
+    if(reply->error())
+    {
+	//TODO
+	qDebug() << "downloadFinished todo ";
+    }
+    else
+    {
+	QDir katalog("modules/");
+	katalog.mkpath(CurrentAuthor);
+
+	QFileInfo fileinfo(url.path());
+
+	QString fileName = buildModuleName(fileinfo.baseName());
+
+	QFile file(fileName);
+	if(file.open(QIODevice::WriteOnly))
+	{
+	    file.write(reply->readAll());
+	    file.close();
+
+	    qDebug() << "downloadFinished - module fetched";
+
+	    mediaObject->setCurrentSource(fileName);
+	    QFileInfo fileinfo(fileName);
+	    TitleLabel->setText(fileinfo.baseName());
+
+	    TimeLabel->setText("00:00");
+	    mediaObject->play();
+	}
+    }
+}
+
+QString HrwPlayer::buildModuleName(QString title, bool localName)
+{
+    QString fullName;
+    
+    if(localName)
+	fullName.append("modules/");
+
+    fullName.append(CurrentAuthor);
+    fullName.append("/");
+    fullName.append(title);
+    fullName.append(".mod");
+
+    return fullName;
 }
