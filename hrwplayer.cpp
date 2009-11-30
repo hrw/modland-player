@@ -158,6 +158,8 @@ void HrwPlayer::FinishedPlaying()
 //        SongsList->setCurrentRow(0);
 	PopulateSongs(AuthorsList->item(AuthorsList->currentRow() + 1));
 	selectedItem =  SongsList->item(0);
+	AuthorsList->setCurrentRow(AuthorsList->currentRow() + 1);
+	SongsList->setCurrentRow(0);
     }
     else
     {
