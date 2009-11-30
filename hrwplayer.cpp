@@ -136,6 +136,8 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
     CurrentAuthor = selectedItem->text();
     QSqlQuery query("SELECT title FROM songs WHERE author = '" + CurrentAuthor + "' ORDER BY title");
 
+    qDebug() << "PopulateSongs - switching to author: " << CurrentAuthor;
+
     QStringList songs;
     while (query.next()) {
 	songs << query.value(0).toString().remove(QRegExp(".mod$"));
@@ -151,8 +153,11 @@ void HrwPlayer::FinishedPlaying()
 
     if(SongsList->currentRow() == (SongsList->count() - 1))
     {
-	selectedItem = SongsList->item(0);
-	SongsList->setCurrentRow(0);
+	// for looping over one author
+//        selectedItem = SongsList->item(0);
+//        SongsList->setCurrentRow(0);
+	PopulateSongs(AuthorsList->item(AuthorsList->currentRow() + 1));
+	selectedItem =  SongsList->item(0);
     }
     else
     {
@@ -160,6 +165,7 @@ void HrwPlayer::FinishedPlaying()
 	SongsList->setCurrentRow(SongsList->currentRow() + 1);
     }
 
+    qDebug() << "play?";
     PlaySelected(selectedItem);
 }
 
@@ -221,7 +227,7 @@ QString HrwPlayer::buildModuleName(QString title, bool localName)
     if(localName)
 	fullName.append("modules/");
 
-    fullName + CurrentAuthor + "/" + title + ".mod";
+    fullName += CurrentAuthor + "/" + title + ".mod";
 
     return fullName;
 }
