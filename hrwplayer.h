@@ -23,10 +23,14 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
 	Phonon::AudioOutput *audioOutput;
+	QString CurrentAuthor;
+	void DoConnects();
+	void InitializeSongsList();
 
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);
     void PlaySelected(QListWidgetItem* selectedItem);
+    void PopulateSongs(QListWidgetItem* selectedItem);
     void FinishedPlaying();
     void tick(qint64 time);
 

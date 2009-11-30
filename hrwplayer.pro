@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-QT += phonon
+QT += phonon sql
 
 # Input
 HEADERS += hrwplayer.h

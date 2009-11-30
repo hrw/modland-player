@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QTime>
+#include <QtSql>
 
 #include "hrwplayer.h"
 
@@ -19,6 +20,12 @@ HrwPlayer::HrwPlayer()
 
     Phonon::createPath(mediaObject, audioOutput);
 
+    DoConnects();
+    InitializeSongsList();
+}
+
+void HrwPlayer::DoConnects()
+{
     connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
     connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
 	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
@@ -30,18 +37,27 @@ HrwPlayer::HrwPlayer()
 
     connect(LoadButton,  SIGNAL(clicked()), this,        SLOT(OpenFileName()));
     connect(SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
+    connect(AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
     connect(PlayButton,  SIGNAL(clicked()), mediaObject, SLOT(play()));
     connect(PauseButton, SIGNAL(clicked()), mediaObject, SLOT(pause()) );
     connect(StopButton,  SIGNAL(clicked()), mediaObject, SLOT(stop()));
 
     seekSlider->setMediaObject(mediaObject);
     volumeSlider->setAudioOutput(audioOutput);
+}
 
+void HrwPlayer::InitializeSongsList()
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("utwory.sqlite");
+    db.open();
 
-    QDir moduleList("./Jester/");
-    QStringList filters;
-    filters << "*.mod";
-    SongsList->insertItems(0, moduleList.entryList(filters));
+    QSqlQuery query("SELECT DISTINCT(author) as author FROM songs ORDER BY author");
+    QStringList authors;
+    while (query.next()) {
+	authors << query.value(0).toString();
+    }
+    AuthorsList->insertItems(0, authors);
 };
 
 HrwPlayer::~HrwPlayer() {};
@@ -100,12 +116,31 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
 {
     QString fileName = "Jester/";
     fileName.append(selectedItem->text());
+    fileName.append(".mod");
     mediaObject->setCurrentSource(fileName);
     QFileInfo fileinfo(fileName);
     TitleLabel->setText(fileinfo.baseName());
 
     TimeLabel->setText("00:00");
     mediaObject->play();
+}
+
+void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
+{
+    CurrentAuthor = selectedItem->text();
+    QString songsquery = "SELECT title FROM songs WHERE author = '";  
+
+    songsquery.append(CurrentAuthor);
+    songsquery.append("' ORDER BY title");
+    QSqlQuery query(songsquery);
+
+    QStringList songs;
+    while (query.next()) {
+	songs << query.value(0).toString().remove(QRegExp(".mod$"));
+    }
+
+    SongsList->clear();
+    SongsList->insertItems(0, songs);
 }
 
 void HrwPlayer::FinishedPlaying()

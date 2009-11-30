@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>633</width>
-    <height>470</height>
+    <width>428</width>
+    <height>485</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Hrw Qt Player</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="LoadButton">
@@ -47,10 +47,17 @@
       </item>
      </layout>
     </item>
-    <item>
-     <widget class="QListWidget" name="SongsList"/>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QListWidget" name="AuthorsList"/>
+      </item>
+      <item>
+       <widget class="QListWidget" name="SongsList"/>
+      </item>
+     </layout>
     </item>
-    <item>
+    <item row="2" column="0">
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="Phonon::SeekSlider" name="seekSlider"/>
@@ -67,7 +74,7 @@
       </item>
      </layout>
     </item>
-    <item>
+    <item row="3" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="TitleLabel">
@@ -98,7 +105,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>633</width>
+     <width>428</width>
      <height>21</height>
     </rect>
    </property>
