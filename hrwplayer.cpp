@@ -77,10 +77,10 @@ void HrwPlayer::JustPlay(QString fileName)
 
 void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
 {
-    switch (newState) 
+    switch (newState)
     {
 	case Phonon::ErrorState:
-	    if (mediaObject->errorType() == Phonon::FatalError) 
+	    if (mediaObject->errorType() == Phonon::FatalError)
 	    {
 		QMessageBox::warning(this, tr("Fatal Error"),
 			mediaObject->errorString());
@@ -123,7 +123,7 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
     {
 	qDebug() << "PlaySelected - module not available";
 
-	FetchSong(buildModuleName(selectedItem->text(), FALSE));
+	FetchSong(buildModuleName(selectedItem->text(), false));
     }
     else
     {
@@ -170,7 +170,7 @@ void HrwPlayer::tick(qint64 time)
     TimeLabel->setText(displayTime.toString("mm:ss"));
 }
 
-bool HrwPlayer::FetchSong(QString fileName)
+void HrwPlayer::FetchSong(QString fileName)
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
@@ -180,8 +180,6 @@ bool HrwPlayer::FetchSong(QString fileName)
     qDebug() << "FetchSong - module to fetch: " << urlSong ;
 
     manager->get(QNetworkRequest(QUrl(urlSong)));
-
-    return 1;
 }
 
 
@@ -219,7 +217,7 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 QString HrwPlayer::buildModuleName(QString title, bool localName)
 {
     QString fullName;
-    
+
     if(localName)
 	fullName.append("modules/");
 

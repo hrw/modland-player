@@ -36,7 +36,7 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 	QString CurrentAuthor;
 	void DoConnects();
 	void InitializeSongsList();
-	bool FetchSong(QString fileName);
+	void FetchSong(QString fileName);
 	void JustPlay(QString fileName);
 	QString buildModuleName(QString title, bool localName = true);
 
