@@ -62,10 +62,17 @@ void HrwPlayer::OpenFileName()
 
     if (!fileName.isEmpty())
     {
-	mediaObject->setCurrentSource(fileName);
-	QFileInfo fileinfo(fileName);
-	TitleLabel->setText(fileinfo.baseName());
+	JustPlay(fileName);
     }
+}
+
+void HrwPlayer::JustPlay(QString fileName)
+{
+    mediaObject->setCurrentSource(fileName);
+    QFileInfo fileinfo(fileName);
+    TitleLabel->setText("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
+    TimeLabel->setText("00:00");
+    mediaObject->play();
 }
 
 void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
@@ -120,12 +127,7 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
     }
     else
     {
-	mediaObject->setCurrentSource(fileName);
-	QFileInfo fileinfo(fileName);
-	TitleLabel->setText(fileinfo.baseName());
-
-	TimeLabel->setText("00:00");
-	mediaObject->play();
+	JustPlay(fileName);
     }
 }
 
@@ -214,12 +216,7 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 
 	    qDebug() << "downloadFinished - module fetched";
 
-	    mediaObject->setCurrentSource(fileName);
-	    QFileInfo fileinfo(fileName);
-	    TitleLabel->setText(fileinfo.baseName());
-
-	    TimeLabel->setText("00:00");
-	    mediaObject->play();
+	    JustPlay(fileName);
 	}
     }
 }

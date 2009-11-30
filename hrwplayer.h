@@ -37,6 +37,8 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 	void DoConnects();
 	void InitializeSongsList();
 	bool FetchSong(QString fileName);
+	void JustPlay(QString fileName);
+	QString buildModuleName(QString title, bool localName = true);
 
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);
@@ -45,6 +47,5 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
     void FinishedPlaying();
     void tick(qint64 time);
     void downloadFinished(QNetworkReply* reply);
-    QString buildModuleName(QString title, bool localName = true);
 
 };
