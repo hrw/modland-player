@@ -27,7 +27,6 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
 	~HrwPlayer();
 
     public slots:
-        void OpenFileName();
 
     private:
 	Phonon::MediaObject *mediaObject;

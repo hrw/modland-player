@@ -29,7 +29,6 @@ void HrwPlayer::DoConnects()
     //            this, SLOT(sourceChanged(Phonon::MediaSource)));
     connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
 
-    connect(LoadButton,  SIGNAL(clicked()), this,        SLOT(OpenFileName()));
     connect(SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
     connect(PlayButton,  SIGNAL(clicked()), mediaObject, SLOT(play()));
@@ -56,16 +55,6 @@ void HrwPlayer::InitializeSongsList()
 };
 
 HrwPlayer::~HrwPlayer() {};
-
-void HrwPlayer::OpenFileName()
-{
-    QString fileName = QFileDialog::getOpenFileName(NULL, "Select module", moduleFileName);
-
-    if (!fileName.isEmpty())
-    {
-	JustPlay(fileName);
-    }
-}
 
 void HrwPlayer::JustPlay(QString fileName)
 {
