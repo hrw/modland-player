@@ -52,6 +52,7 @@ void HrwPlayer::InitializeSongsList()
 	authors << query.value(0).toString();
     }
     AuthorsList->insertItems(0, authors);
+    PopulateSongs(AuthorsList->item(0));
 };
 
 HrwPlayer::~HrwPlayer() {};
