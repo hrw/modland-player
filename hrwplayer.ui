@@ -26,30 +26,37 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QPushButton" name="LoadButton">
+         <widget class="QToolButton" name="PrevButton">
           <property name="text">
-           <string>Load</string>
+           <string>Prev</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="PlayButton">
+         <widget class="QToolButton" name="PlayButton">
           <property name="text">
            <string>Play</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="PauseButton">
+         <widget class="QToolButton" name="PauseButton">
           <property name="text">
            <string>Pause</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="StopButton">
+         <widget class="QToolButton" name="StopButton">
           <property name="text">
            <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="NextButton">
+          <property name="text">
+           <string>Next</string>
           </property>
          </widget>
         </item>
@@ -113,7 +120,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -163,22 +169,6 @@
     <hint type="destinationlabel">
      <x>273</x>
      <y>276</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionLoad</sender>
-   <signal>triggered()</signal>
-   <receiver>LoadButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>67</x>
-     <y>37</y>
     </hint>
    </hints>
   </connection>
