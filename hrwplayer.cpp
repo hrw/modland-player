@@ -20,6 +20,7 @@ HrwPlayer::HrwPlayer()
     NextButton->setIcon(QIcon::fromTheme("media-skip-forward"));
     PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
 
+    progressBar->setVisible(false);
     DoConnects();
     InitializeSongsList();
 }
@@ -184,9 +185,18 @@ void HrwPlayer::FetchSong(QString fileName)
 
     qDebug() << "FetchSong - module to fetch: " << urlSong ;
 
-    manager->get(QNetworkRequest(QUrl(urlSong)));
+    QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
+
+    progressBar->reset();
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
+    progressBar->setVisible(true);
 }
 
+void HrwPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
+{
+    progressBar->setMaximum(bytestotal);
+    progressBar->setValue(bytesfetched);
+}
 
 void HrwPlayer::downloadFinished(QNetworkReply *reply)
 {
@@ -217,6 +227,7 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 	    JustPlay(fileName);
 	}
     }
+    progressBar->setVisible(false);
 }
 
 QString HrwPlayer::buildModuleName(QString title, bool localName)
