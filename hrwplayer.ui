@@ -124,7 +124,6 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad">
    <property name="text">
     <string>Load</string>
