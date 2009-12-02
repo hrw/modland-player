@@ -14,6 +14,12 @@ HrwPlayer::HrwPlayer()
 
     Phonon::createPath(mediaObject, audioOutput);
 
+    PlayButton->setIcon(QIcon::fromTheme("media-playback-start"));
+    StopButton->setIcon(QIcon::fromTheme("media-playback-stop"));
+    PauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
+    NextButton->setIcon(QIcon::fromTheme("media-skip-forward"));
+    PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
+
     DoConnects();
     InitializeSongsList();
 }
@@ -34,6 +40,7 @@ void HrwPlayer::DoConnects()
     connect(PlayButton,  SIGNAL(clicked()), mediaObject, SLOT(play()));
     connect(PauseButton, SIGNAL(clicked()), mediaObject, SLOT(pause()) );
     connect(StopButton,  SIGNAL(clicked()), mediaObject, SLOT(stop()));
+    connect(NextButton,  SIGNAL(clicked()), this, SLOT(FinishedPlaying()));
 
     seekSlider->setMediaObject(mediaObject);
     volumeSlider->setAudioOutput(audioOutput);
