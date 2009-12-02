@@ -61,12 +61,12 @@ void HrwPlayer::InitializeSongsList()
     db.setDatabaseName("utwory.sqlite");
     db.open();
 
-    QSqlQuery query("SELECT DISTINCT(author) as author FROM songs ORDER BY author");
+    QSqlQuery query("SELECT id, title FROM authors ORDER BY title");
     QStringList authors;
     while (query.next()) {
-	authors << query.value(0).toString();
+	authors << query.value(1).toString();
     }
-    AuthorsList->insertItems(0, authors);
+    AuthorsList->insertItems(1, authors);
     PopulateSongs(AuthorsList->item(0));
 };
 
@@ -148,9 +148,15 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
     qDebug() << "HrwPlayer::PopulateSongs()";
 
     CurrentAuthor = selectedItem->text();
-    QSqlQuery query("SELECT title FROM songs WHERE author = '" + CurrentAuthor + "' ORDER BY title");
+    qDebug() << "SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'";
+    QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
+    
+    query.first();
+    query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
 
     qDebug() << "\t" << "PopulateSongs - switching to author: " << CurrentAuthor;
+
+    qDebug() << "\t" << "SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title";
 
     QStringList songs;
     while (query.next()) {
