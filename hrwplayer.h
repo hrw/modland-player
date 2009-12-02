@@ -47,5 +47,6 @@ class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
     void tick(qint64 time);
     void downloadFinished(QNetworkReply* reply);
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
+    void handleFavorite();
 
 };

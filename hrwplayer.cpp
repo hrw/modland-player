@@ -19,6 +19,7 @@ HrwPlayer::HrwPlayer()
     PauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
     NextButton->setIcon(QIcon::fromTheme("media-skip-forward"));
     PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
+    FavoriteButton->setIcon(QIcon::fromTheme("bookmarks"));
 
     progressBar->setVisible(false);
     DoConnects();
@@ -42,6 +43,7 @@ void HrwPlayer::DoConnects()
     connect(PauseButton, SIGNAL(clicked()), mediaObject, SLOT(pause()) );
     connect(StopButton,  SIGNAL(clicked()), mediaObject, SLOT(stop()));
     connect(NextButton,  SIGNAL(clicked()), this, SLOT(FinishedPlaying()));
+    connect(FavoriteButton,  SIGNAL(clicked()), this, SLOT(handleFavorite()));
 
     seekSlider->setMediaObject(mediaObject);
     volumeSlider->setAudioOutput(audioOutput);
@@ -240,4 +242,8 @@ QString HrwPlayer::buildModuleName(QString title, bool localName)
     fullName += CurrentAuthor + "/" + title + ".mod";
 
     return fullName;
+}
+
+void HrwPlayer::handleFavorite()
+{
 }
