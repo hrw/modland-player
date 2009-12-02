@@ -4,6 +4,8 @@ QString moduleFileName;
 
 HrwPlayer::HrwPlayer()
 {
+    qDebug() << "HrwPlayer::HrwPlayer()";
+
     setupUi(this);
 
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
@@ -28,6 +30,8 @@ HrwPlayer::HrwPlayer()
 
 void HrwPlayer::DoConnects()
 {
+    qDebug() << "HrwPlayer::DoConnects()";
+
     connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
     connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
 	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
@@ -51,6 +55,8 @@ void HrwPlayer::DoConnects()
 
 void HrwPlayer::InitializeSongsList()
 {
+    qDebug() << "HrwPlayer::InitializeSongsList()";
+
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("utwory.sqlite");
     db.open();
@@ -68,6 +74,8 @@ HrwPlayer::~HrwPlayer() {};
 
 void HrwPlayer::JustPlay(QString fileName)
 {
+    qDebug() << "HrwPlayer::JustPlay()";
+
     mediaObject->setCurrentSource(fileName);
     QFileInfo fileinfo(fileName);
     TitleLabel->setText("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
@@ -77,6 +85,8 @@ void HrwPlayer::JustPlay(QString fileName)
 
 void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
 {
+    qDebug() << "HrwPlayer::StateChanged()";
+
     switch (newState)
     {
 	case Phonon::ErrorState:
@@ -115,13 +125,15 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
 
 void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
 {
+    qDebug() << "HrwPlayer::PlaySelected()";
+
     QString fileName = buildModuleName(selectedItem->text());
 
-    qDebug() << "PlaySelected - module to play: " << fileName ;
+    qDebug() << "\t" << "PlaySelected - module to play: " << fileName ;
 
     if(!QFile::exists(fileName))
     {
-	qDebug() << "PlaySelected - module not available";
+	qDebug() << "\t" << "PlaySelected - module not available";
 
 	FetchSong(buildModuleName(selectedItem->text(), false));
     }
@@ -133,10 +145,12 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
 
 void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 {
+    qDebug() << "HrwPlayer::PopulateSongs()";
+
     CurrentAuthor = selectedItem->text();
     QSqlQuery query("SELECT title FROM songs WHERE author = '" + CurrentAuthor + "' ORDER BY title");
 
-    qDebug() << "PopulateSongs - switching to author: " << CurrentAuthor;
+    qDebug() << "\t" << "PopulateSongs - switching to author: " << CurrentAuthor;
 
     QStringList songs;
     while (query.next()) {
@@ -149,6 +163,8 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 
 void HrwPlayer::FinishedPlaying()
 {
+    qDebug() << "HrwPlayer::FinishedPlaying()";
+
     QListWidgetItem* selectedItem;
 
     if(SongsList->currentRow() == (SongsList->count() - 1))
@@ -167,12 +183,14 @@ void HrwPlayer::FinishedPlaying()
 	SongsList->setCurrentRow(SongsList->currentRow() + 1);
     }
 
-    qDebug() << "play?";
+    qDebug() << "\t" << "play?";
     PlaySelected(selectedItem);
 }
 
 void HrwPlayer::tick(qint64 time)
 {
+    qDebug() << "HrwPlayer::tick()";
+
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
     TimeLabel->setText(displayTime.toString("mm:ss"));
@@ -180,12 +198,14 @@ void HrwPlayer::tick(qint64 time)
 
 void HrwPlayer::FetchSong(QString fileName)
 {
+    qDebug() << "HrwPlayer::FetchSong()";
+
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
 
     QString urlSong = "ftp://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/Protracker/" + fileName ;
 
-    qDebug() << "FetchSong - module to fetch: " << urlSong ;
+    qDebug() << "\t" << "FetchSong - module to fetch: " << urlSong ;
 
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
@@ -196,18 +216,22 @@ void HrwPlayer::FetchSong(QString fileName)
 
 void HrwPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
+    qDebug() << "HrwPlayer::handleProgressBar()";
+
     progressBar->setMaximum(bytestotal);
     progressBar->setValue(bytesfetched);
 }
 
 void HrwPlayer::downloadFinished(QNetworkReply *reply)
 {
+    qDebug() << "HrwPlayer::downloadFinished()";
+
     QUrl url = reply->url();
 
     if(reply->error())
     {
 	//TODO
-	qDebug() << "downloadFinished todo ";
+	qDebug() << "\t" << "downloadFinished todo ";
     }
     else
     {
@@ -224,7 +248,7 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 	    file.write(reply->readAll());
 	    file.close();
 
-	    qDebug() << "downloadFinished - module fetched";
+	    qDebug() << "\t" << "downloadFinished - module fetched";
 
 	    JustPlay(fileName);
 	}
@@ -246,4 +270,6 @@ QString HrwPlayer::buildModuleName(QString title, bool localName)
 
 void HrwPlayer::handleFavorite()
 {
+    qDebug() << "HrwPlayer::handleFavorite()";
+
 }
