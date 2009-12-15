@@ -41,15 +41,21 @@ class HrwPlayer:public QObject
 	QString buildModuleName(QString title, bool localName = true);
 	void DoConnects();
 
+	void UI_PopulateAuthorsList(QStringList authors);
+	void UI_PopulateSongsList(QStringList songs);
+	void UI_SetSongInfo(QString title);
+	bool UI_IsItLastSong();
+	QString UI_NextAuthorName();
+
 
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);
     void PlaySelected(QListWidgetItem* selectedItem);
     void PopulateSongs(QListWidgetItem* selectedItem);
     void FinishedPlaying();
-    void tick(qint64 time);
     void downloadFinished(QNetworkReply* reply);
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
     void handleFavorite();
+    void UI_tick(qint64 time);
 
 };

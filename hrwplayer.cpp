@@ -19,6 +19,7 @@ HrwPlayer::HrwPlayer()
     DoConnects();
     InitializeAuthorsList();
 }
+HrwPlayer::~HrwPlayer() {};
 
 void HrwPlayer::InitializeAuthorsList()
 {
@@ -30,14 +31,25 @@ void HrwPlayer::InitializeAuthorsList()
 
     QSqlQuery query("SELECT id, title FROM authors ORDER BY title");
     QStringList authors;
+
     while (query.next()) {
 	authors << query.value(1).toString();
     }
-    mainUI->AuthorsList->insertItems(1, authors);
-    PopulateSongs(mainUI->AuthorsList->item(0));
+
+    UI_PopulateAuthorsList(authors);
 };
 
-HrwPlayer::~HrwPlayer() {};
+void HrwPlayer::UI_PopulateAuthorsList(QStringList authors)
+{
+    mainUI->AuthorsList->insertItems(1, authors);
+    PopulateSongs(mainUI->AuthorsList->item(0));
+}
+
+void HrwPlayer::UI_SetSongInfo(QString title)
+{
+    mainUI->TitleLabel->setText(title);
+    mainUI->TimeLabel->setText("00:00");
+}
 
 void HrwPlayer::JustPlay(QString fileName)
 {
@@ -45,8 +57,7 @@ void HrwPlayer::JustPlay(QString fileName)
 
     mediaObject->setCurrentSource(fileName);
     QFileInfo fileinfo(fileName);
-    mainUI->TitleLabel->setText("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
-    mainUI->TimeLabel->setText("00:00");
+    UI_SetSongInfo("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
     mediaObject->play();
 }
 
@@ -128,8 +139,24 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 	songs << query.value(0).toString().remove(QRegExp(".mod$"));
     }
 
+    UI_PopulateSongsList(songs);
+}
+
+void HrwPlayer::UI_PopulateSongsList(QStringList songs)
+{
     mainUI->SongsList->clear();
     mainUI->SongsList->insertItems(0, songs);
+}
+
+bool HrwPlayer::UI_IsItLastSong()
+QString HrwPlayer::UI_NextAuthorName()
+{
+    return (mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1));
+}
+
+QString HrwPlayer::UI_NextAuthorName()
+{
+    return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
 }
 
 void HrwPlayer::FinishedPlaying()
@@ -138,9 +165,9 @@ void HrwPlayer::FinishedPlaying()
 
     QListWidgetItem* selectedItem;
 
-    if(mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1))
+    if(UI_IsItLastSong())
     {
-	PopulateSongs(mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1));
+	PopulateSongs(UI_NextAuthorName());
 	selectedItem =  mainUI->SongsList->item(0);
 	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(0);
@@ -155,7 +182,7 @@ void HrwPlayer::FinishedPlaying()
     PlaySelected(selectedItem);
 }
 
-void HrwPlayer::tick(qint64 time)
+void HrwPlayer::UI_tick(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
@@ -245,7 +272,7 @@ void HrwPlayer::DoConnects()
 {
     qDebug() << "HrwPlayer::DoConnects()";
 
-    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
+    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
     connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
 	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
     connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
