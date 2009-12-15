@@ -9,7 +9,13 @@ INCLUDEPATH += .
 QT += phonon sql network
 
 # Input
-HEADERS += hrwplayer.h desktopui.h
-FORMS += desktop.ui
-SOURCES += hrwplayer.cpp main.cpp desktopui.cpp
-maemo5:FORMS = maemo-authors.ui maemo-play.ui maemo-songs.ui
+HEADERS += hrwplayer.h
+SOURCES += hrwplayer.cpp main.cpp 
+
+#FORMS += desktop.ui
+#HEADERS += desktopui.h
+#SOURCES += desktopui.cpp
+
+HEADERS += maemo-authorsui.h maemo-playui.h maemo-songsui.h
+SOURCES += maemo-authorsui.cpp maemo-playui.cpp maemo-songsui.cpp
+FORMS = maemo-authors.ui maemo-play.ui maemo-songs.ui

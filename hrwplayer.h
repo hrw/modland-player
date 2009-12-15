@@ -16,7 +16,15 @@
 
 #include <QDebug>
 
-#include "desktopui.h"
+#define MAEMO5
+
+#ifndef MAEMO5
+	#include "desktopui.h"
+#else
+	#include "maemo-authorsui.h"
+	#include "maemo-playui.h"
+	#include "maemo-songsui.h"
+#endif
 
 class HrwPlayer:public QObject
 {
@@ -30,7 +38,13 @@ class HrwPlayer:public QObject
     public slots:
 
     private:
+#ifndef MAEMO5
 	DesktopUI *mainUI;
+#else
+	MaemoAuthorsUI *authorsUI;
+	MaemoSongsUI   *songsUI;
+	MaemoPlayUI    *playUI;
+#endif
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
 	Phonon::AudioOutput *audioOutput;
@@ -45,7 +59,7 @@ class HrwPlayer:public QObject
 	void UI_PopulateSongsList(QStringList songs);
 	void UI_SetSongInfo(QString title);
 	bool UI_IsItLastSong();
-	QString UI_NextAuthorName();
+	QListWidgetItem* UI_NextAuthorName();
 
 
     private slots:

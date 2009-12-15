@@ -6,11 +6,19 @@ HrwPlayer::HrwPlayer()
 {
     qDebug() << "HrwPlayer::HrwPlayer()";
 
+#ifndef MAEMO5
     mainUI = new DesktopUI();
-
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
     mediaObject = new Phonon::MediaObject(mainUI);
     metaInformationResolver = new Phonon::MediaObject(mainUI);
+#else
+    authorsUI = new MaemoAuthorsUI();
+    songsUI   = new MaemoSongsUI();
+    playUI    = new MaemoPlayUI();
+    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, playUI);
+    mediaObject = new Phonon::MediaObject(playUI);
+    metaInformationResolver = new Phonon::MediaObject(playUI);
+#endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
 
@@ -41,14 +49,24 @@ void HrwPlayer::InitializeAuthorsList()
 
 void HrwPlayer::UI_PopulateAuthorsList(QStringList authors)
 {
+#ifndef MAEMO5
     mainUI->AuthorsList->insertItems(1, authors);
     PopulateSongs(mainUI->AuthorsList->item(0));
+#else
+    authorsUI->AuthorsList->insertItems(1, authors);
+    PopulateSongs(authorsUI->AuthorsList->item(0));
+#endif
 }
 
 void HrwPlayer::UI_SetSongInfo(QString title)
 {
+#ifndef MAEMO5
     mainUI->TitleLabel->setText(title);
     mainUI->TimeLabel->setText("00:00");
+#else
+    playUI->TitleLabel->setText(title);
+    playUI->TimeLabel->setText("00:00");
+#endif
 }
 
 void HrwPlayer::JustPlay(QString fileName)
@@ -70,11 +88,11 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
 	case Phonon::ErrorState:
 	    if (mediaObject->errorType() == Phonon::FatalError)
 	    {
-		QMessageBox::warning(mainUI, tr("Fatal Error"), mediaObject->errorString());
+//                QMessageBox::warning(mainUI, tr("Fatal Error"), mediaObject->errorString());
 	    }
 	    else
 	    {
-		QMessageBox::warning(mainUI, tr("Error"), mediaObject->errorString());
+//                QMessageBox::warning(mainUI, tr("Error"), mediaObject->errorString());
 	    }
 	    break;
 //        case Phonon::PlayingState:
@@ -144,19 +162,31 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 
 void HrwPlayer::UI_PopulateSongsList(QStringList songs)
 {
+#ifndef MAEMO5
     mainUI->SongsList->clear();
     mainUI->SongsList->insertItems(0, songs);
+#else
+    songsUI->SongsList->clear();
+    songsUI->SongsList->insertItems(0, songs);
+#endif
 }
 
 bool HrwPlayer::UI_IsItLastSong()
-QString HrwPlayer::UI_NextAuthorName()
 {
+#ifndef MAEMO5
     return (mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1));
+#else
+    return (songsUI->SongsList->currentRow() == (songsUI->SongsList->count() - 1));
+#endif
 }
 
-QString HrwPlayer::UI_NextAuthorName()
+QListWidgetItem* HrwPlayer::UI_NextAuthorName()
 {
+#ifndef MAEMO5
     return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
+#else
+    return authorsUI->AuthorsList->item(authorsUI->AuthorsList->currentRow() + 1);
+#endif
 }
 
 void HrwPlayer::FinishedPlaying()
@@ -168,14 +198,25 @@ void HrwPlayer::FinishedPlaying()
     if(UI_IsItLastSong())
     {
 	PopulateSongs(UI_NextAuthorName());
+#ifndef MAEMO5
 	selectedItem =  mainUI->SongsList->item(0);
 	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(0);
+#else
+	selectedItem =  songsUI->SongsList->item(0);
+	authorsUI->AuthorsList->setCurrentRow(authorsUI->AuthorsList->currentRow() + 1);
+	songsUI->SongsList->setCurrentRow(0);
+#endif
     }
     else
     {
+#ifndef MAEMO5
 	selectedItem =  mainUI->SongsList->item(mainUI->SongsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(mainUI->SongsList->currentRow() + 1);
+#else
+	selectedItem =  songsUI->SongsList->item(songsUI->SongsList->currentRow() + 1);
+	songsUI->SongsList->setCurrentRow(songsUI->SongsList->currentRow() + 1);
+#endif
     }
 
     qDebug() << "\t" << "play?";
@@ -186,7 +227,11 @@ void HrwPlayer::UI_tick(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
+#ifndef MAEMO5
     mainUI->TimeLabel->setText(displayTime.toString("mm:ss"));
+#else
+    playUI->TimeLabel->setText(displayTime.toString("mm:ss"));
+#endif
 }
 
 void HrwPlayer::FetchSong(QString fileName)
@@ -203,17 +248,29 @@ void HrwPlayer::FetchSong(QString fileName)
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
     qDebug() << "\t" << "FetchSong - after get" ;
+
+#ifndef MAEMO5
     mainUI->progressBar->reset();
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
     mainUI->progressBar->setVisible(true);
+#else
+    playUI->progressBar->reset();
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
+    playUI->progressBar->setVisible(true);
+#endif
 }
 
 void HrwPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
     qDebug() << "HrwPlayer::handleProgressBar()";
 
+#ifndef MAEMO5
     mainUI->progressBar->setMaximum(bytestotal);
     mainUI->progressBar->setValue(bytesfetched);
+#else
+    playUI->progressBar->setMaximum(bytestotal);
+    playUI->progressBar->setValue(bytesfetched);
+#endif
 }
 
 void HrwPlayer::downloadFinished(QNetworkReply *reply)
@@ -247,7 +304,11 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 	    JustPlay(fileName);
 	}
     }
+#ifndef MAEMO5
     mainUI->progressBar->setVisible(false);
+#else
+    playUI->progressBar->setVisible(false);
+#endif
 }
 
 QString HrwPlayer::buildModuleName(QString title, bool localName)
@@ -272,11 +333,8 @@ void HrwPlayer::DoConnects()
 {
     qDebug() << "HrwPlayer::DoConnects()";
 
-    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
-    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
-    connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
-
+#ifndef MAEMO5
+    mainUI->seekSlider->setMediaObject(mediaObject);
     connect(mainUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(mainUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
     connect(mainUI->actionPlay,  SIGNAL(triggered()), mediaObject, SLOT(play()));
@@ -284,11 +342,26 @@ void HrwPlayer::DoConnects()
     connect(mainUI->actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
     connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
+#else
+    playUI->seekSlider->setMediaObject(mediaObject);
+    connect(songsUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
+    connect(authorsUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
+#endif
 
-    mainUI->seekSlider->setMediaObject(mediaObject);
+    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
+    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
+	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
+    connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+
 }
 
 void HrwPlayer::show()
 {
+#ifndef MAEMO5
     mainUI->show();
+#else
+    authorsUI->show();
+    songsUI->show();
+    playUI->show();
+#endif
 }
