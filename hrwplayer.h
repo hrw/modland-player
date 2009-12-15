@@ -35,7 +35,7 @@ class HrwPlayer:public QObject
 	Phonon::MediaObject *metaInformationResolver;
 	Phonon::AudioOutput *audioOutput;
 	QString CurrentAuthor;
-	void InitializeSongsList();
+	void InitializeAuthorsList();
 	void FetchSong(QString fileName);
 	void JustPlay(QString fileName);
 	QString buildModuleName(QString title, bool localName = true);

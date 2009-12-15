@@ -17,10 +17,10 @@ HrwPlayer::HrwPlayer()
     Phonon::createPath(mediaObject, audioOutput);
 
     DoConnects();
-    InitializeSongsList();
+    InitializeAuthorsList();
 }
 
-void HrwPlayer::InitializeSongsList()
+void HrwPlayer::InitializeAuthorsList()
 {
     qDebug() << "HrwPlayer::InitializemainUI->SongsList()";
 
@@ -59,11 +59,11 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
 	case Phonon::ErrorState:
 	    if (mediaObject->errorType() == Phonon::FatalError)
 	    {
-//                QMessageBox::warning(this, tr("Fatal Error"), mediaObject->errorString());
+		QMessageBox::warning(mainUI, tr("Fatal Error"), mediaObject->errorString());
 	    }
 	    else
 	    {
-//                QMessageBox::warning(this, tr("Error"), mediaObject->errorString());
+		QMessageBox::warning(mainUI, tr("Error"), mediaObject->errorString());
 	    }
 	    break;
 //        case Phonon::PlayingState:
