@@ -16,13 +16,6 @@ HrwPlayer::HrwPlayer()
 
     Phonon::createPath(mediaObject, audioOutput);
 
-//    PlayButton->setIcon(QIcon::fromTheme("media-playback-start"));
-//    StopButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-//    PauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-//    NextButton->setIcon(QIcon::fromTheme("media-skip-forward"));
-//    PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
-//    FavoriteButton->setIcon(QIcon::fromTheme("bookmarks"));
-
     DoConnects();
     InitializeSongsList();
 }
