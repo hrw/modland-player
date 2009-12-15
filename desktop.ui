@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HrwPlayer</class>
- <widget class="QMainWindow" name="HrwPlayer">
+ <class>DesktopUI</class>
+ <widget class="QMainWindow" name="DesktopUI">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -159,7 +159,7 @@
   <connection>
    <sender>actionExit</sender>
    <signal>triggered(bool)</signal>
-   <receiver>HrwPlayer</receiver>
+   <receiver>DesktopUI</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

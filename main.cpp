@@ -8,8 +8,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     app.setApplicationName("Hrw Qt Player");
-    HrwPlayer window;
+    HrwPlayer player;
 
-    window.show();
+    player.show();
     return app.exec();
 }

@@ -6,38 +6,41 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QMessageBox>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QObject>
 #include <QTime>
 #include <QtSql>
+#include <QListWidget>
 
 #include <QDebug>
 
-#include "ui_hrwplayer.h"
+#include "desktopui.h"
 
-class HrwPlayer:public QMainWindow, public Ui_HrwPlayer
+class HrwPlayer:public QObject
 {
     Q_OBJECT
 
     public:
 	HrwPlayer();
 	~HrwPlayer();
+	void show();
 
     public slots:
 
     private:
+	DesktopUI *mainUI;
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
 	Phonon::AudioOutput *audioOutput;
 	QString CurrentAuthor;
-	void DoConnects();
 	void InitializeSongsList();
 	void FetchSong(QString fileName);
 	void JustPlay(QString fileName);
 	QString buildModuleName(QString title, bool localName = true);
+	void DoConnects();
+
 
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);

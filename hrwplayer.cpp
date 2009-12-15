@@ -6,11 +6,11 @@ HrwPlayer::HrwPlayer()
 {
     qDebug() << "HrwPlayer::HrwPlayer()";
 
-    setupUi(this);
+    mainUI = new DesktopUI();
 
-    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-    mediaObject = new Phonon::MediaObject(this);
-    metaInformationResolver = new Phonon::MediaObject(this);
+    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
+    mediaObject = new Phonon::MediaObject(mainUI);
+    metaInformationResolver = new Phonon::MediaObject(mainUI);
 
     mediaObject->setTickInterval(1000); // for remaining time display
 
@@ -23,38 +23,13 @@ HrwPlayer::HrwPlayer()
 //    PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
 //    FavoriteButton->setIcon(QIcon::fromTheme("bookmarks"));
 
-    progressBar->setVisible(false);
     DoConnects();
     InitializeSongsList();
 }
 
-void HrwPlayer::DoConnects()
-{
-    qDebug() << "HrwPlayer::DoConnects()";
-
-    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
-    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
-    //    connect(metaInformationResolver, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-    //            this, SLOT(metaStateChanged(Phonon::State,Phonon::State)));
-    //    connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
-    //            this, SLOT(sourceChanged(Phonon::MediaSource)));
-    connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
-
-    connect(SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
-    connect(AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
-    connect(actionPlay,  SIGNAL(triggered()), mediaObject, SLOT(play()));
-    connect(actionPause, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
-    connect(actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
-    connect(actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
-    connect(actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
-
-    seekSlider->setMediaObject(mediaObject);
-}
-
 void HrwPlayer::InitializeSongsList()
 {
-    qDebug() << "HrwPlayer::InitializeSongsList()";
+    qDebug() << "HrwPlayer::InitializemainUI->SongsList()";
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("utwory.sqlite");
@@ -65,8 +40,8 @@ void HrwPlayer::InitializeSongsList()
     while (query.next()) {
 	authors << query.value(1).toString();
     }
-    AuthorsList->insertItems(1, authors);
-    PopulateSongs(AuthorsList->item(0));
+    mainUI->AuthorsList->insertItems(1, authors);
+    PopulateSongs(mainUI->AuthorsList->item(0));
 };
 
 HrwPlayer::~HrwPlayer() {};
@@ -77,8 +52,8 @@ void HrwPlayer::JustPlay(QString fileName)
 
     mediaObject->setCurrentSource(fileName);
     QFileInfo fileinfo(fileName);
-    TitleLabel->setText("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
-    TimeLabel->setText("00:00");
+    mainUI->TitleLabel->setText("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
+    mainUI->TimeLabel->setText("00:00");
     mediaObject->play();
 }
 
@@ -91,13 +66,11 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
 	case Phonon::ErrorState:
 	    if (mediaObject->errorType() == Phonon::FatalError)
 	    {
-		QMessageBox::warning(this, tr("Fatal Error"),
-			mediaObject->errorString());
+//                QMessageBox::warning(this, tr("Fatal Error"), mediaObject->errorString());
 	    }
 	    else
 	    {
-		QMessageBox::warning(this, tr("Error"),
-			mediaObject->errorString());
+//                QMessageBox::warning(this, tr("Error"), mediaObject->errorString());
 	    }
 	    break;
 //        case Phonon::PlayingState:
@@ -162,8 +135,8 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 	songs << query.value(0).toString().remove(QRegExp(".mod$"));
     }
 
-    SongsList->clear();
-    SongsList->insertItems(0, songs);
+    mainUI->SongsList->clear();
+    mainUI->SongsList->insertItems(0, songs);
 }
 
 void HrwPlayer::FinishedPlaying()
@@ -172,20 +145,17 @@ void HrwPlayer::FinishedPlaying()
 
     QListWidgetItem* selectedItem;
 
-    if(SongsList->currentRow() == (SongsList->count() - 1))
+    if(mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1))
     {
-	// for looping over one author
-//        selectedItem = SongsList->item(0);
-//        SongsList->setCurrentRow(0);
-	PopulateSongs(AuthorsList->item(AuthorsList->currentRow() + 1));
-	selectedItem =  SongsList->item(0);
-	AuthorsList->setCurrentRow(AuthorsList->currentRow() + 1);
-	SongsList->setCurrentRow(0);
+	PopulateSongs(mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1));
+	selectedItem =  mainUI->SongsList->item(0);
+	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
+	mainUI->SongsList->setCurrentRow(0);
     }
     else
     {
-	selectedItem =  SongsList->item(SongsList->currentRow() + 1);
-	SongsList->setCurrentRow(SongsList->currentRow() + 1);
+	selectedItem =  mainUI->SongsList->item(mainUI->SongsList->currentRow() + 1);
+	mainUI->SongsList->setCurrentRow(mainUI->SongsList->currentRow() + 1);
     }
 
     qDebug() << "\t" << "play?";
@@ -196,7 +166,7 @@ void HrwPlayer::tick(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
-    TimeLabel->setText(displayTime.toString("mm:ss"));
+    mainUI->TimeLabel->setText(displayTime.toString("mm:ss"));
 }
 
 void HrwPlayer::FetchSong(QString fileName)
@@ -213,17 +183,17 @@ void HrwPlayer::FetchSong(QString fileName)
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
     qDebug() << "\t" << "FetchSong - after get" ;
-    progressBar->reset();
+    mainUI->progressBar->reset();
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
-    progressBar->setVisible(true);
+    mainUI->progressBar->setVisible(true);
 }
 
 void HrwPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
     qDebug() << "HrwPlayer::handleProgressBar()";
 
-    progressBar->setMaximum(bytestotal);
-    progressBar->setValue(bytesfetched);
+    mainUI->progressBar->setMaximum(bytestotal);
+    mainUI->progressBar->setValue(bytesfetched);
 }
 
 void HrwPlayer::downloadFinished(QNetworkReply *reply)
@@ -257,7 +227,7 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 	    JustPlay(fileName);
 	}
     }
-    progressBar->setVisible(false);
+    mainUI->progressBar->setVisible(false);
 }
 
 QString HrwPlayer::buildModuleName(QString title, bool localName)
@@ -276,4 +246,29 @@ void HrwPlayer::handleFavorite()
 {
     qDebug() << "HrwPlayer::handleFavorite()";
 
+}
+
+void HrwPlayer::DoConnects()
+{
+    qDebug() << "HrwPlayer::DoConnects()";
+
+    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
+    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
+	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
+    connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+
+    connect(mainUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
+    connect(mainUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
+    connect(mainUI->actionPlay,  SIGNAL(triggered()), mediaObject, SLOT(play()));
+    connect(mainUI->actionPause, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
+    connect(mainUI->actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
+    connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
+    connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
+
+    mainUI->seekSlider->setMediaObject(mediaObject);
+}
+
+void HrwPlayer::show()
+{
+    mainUI->show();
 }
