@@ -16,12 +16,12 @@ HrwPlayer::HrwPlayer()
 
     Phonon::createPath(mediaObject, audioOutput);
 
-    PlayButton->setIcon(QIcon::fromTheme("media-playback-start"));
-    StopButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-    PauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-    NextButton->setIcon(QIcon::fromTheme("media-skip-forward"));
-    PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
-    FavoriteButton->setIcon(QIcon::fromTheme("bookmarks"));
+//    PlayButton->setIcon(QIcon::fromTheme("media-playback-start"));
+//    StopButton->setIcon(QIcon::fromTheme("media-playback-stop"));
+//    PauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
+//    NextButton->setIcon(QIcon::fromTheme("media-skip-forward"));
+//    PrevButton->setIcon(QIcon::fromTheme("media-skip-backward"));
+//    FavoriteButton->setIcon(QIcon::fromTheme("bookmarks"));
 
     progressBar->setVisible(false);
     DoConnects();
@@ -43,14 +43,13 @@ void HrwPlayer::DoConnects()
 
     connect(SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
-    connect(PlayButton,  SIGNAL(clicked()), mediaObject, SLOT(play()));
-    connect(PauseButton, SIGNAL(clicked()), mediaObject, SLOT(pause()) );
-    connect(StopButton,  SIGNAL(clicked()), mediaObject, SLOT(stop()));
-    connect(NextButton,  SIGNAL(clicked()), this, SLOT(FinishedPlaying()));
-    connect(FavoriteButton,  SIGNAL(clicked()), this, SLOT(handleFavorite()));
+    connect(actionPlay,  SIGNAL(triggered()), mediaObject, SLOT(play()));
+    connect(actionPause, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
+    connect(actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
+    connect(actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
+    connect(actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
 
     seekSlider->setMediaObject(mediaObject);
-    volumeSlider->setAudioOutput(audioOutput);
 }
 
 void HrwPlayer::InitializeSongsList()
@@ -101,21 +100,21 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
 			mediaObject->errorString());
 	    }
 	    break;
-	case Phonon::PlayingState:
-	    PlayButton->setEnabled(false);
-	    PauseButton->setEnabled(true);
-	    StopButton->setEnabled(true);
-	    break;
-	case Phonon::StoppedState:
-	    StopButton->setEnabled(false);
-	    PlayButton->setEnabled(true);
-	    PauseButton->setEnabled(false);
-	    break;
-	case Phonon::PausedState:
-	    PauseButton->setEnabled(false);
-	    StopButton->setEnabled(true);
-	    PlayButton->setEnabled(true);
-	    break;
+//        case Phonon::PlayingState:
+//            PlayButton->setEnabled(false);
+//            PauseButton->setEnabled(true);
+//            StopButton->setEnabled(true);
+//            break;
+//        case Phonon::StoppedState:
+//            StopButton->setEnabled(false);
+//            PlayButton->setEnabled(true);
+//            PauseButton->setEnabled(false);
+//            break;
+//        case Phonon::PausedState:
+//            PauseButton->setEnabled(false);
+//            StopButton->setEnabled(true);
+//            PlayButton->setEnabled(true);
+//            break;
 	case Phonon::BufferingState:
 	    break;
 	default:
@@ -195,8 +194,6 @@ void HrwPlayer::FinishedPlaying()
 
 void HrwPlayer::tick(qint64 time)
 {
-    qDebug() << "HrwPlayer::tick()";
-
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
     TimeLabel->setText(displayTime.toString("mm:ss"));
@@ -215,6 +212,7 @@ void HrwPlayer::FetchSong(QString fileName)
 
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
+    qDebug() << "\t" << "FetchSong - after get" ;
     progressBar->reset();
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
     progressBar->setVisible(true);

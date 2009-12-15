@@ -31,52 +31,6 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QToolButton" name="PrevButton">
-          <property name="text">
-           <string>Prev</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="PlayButton">
-          <property name="text">
-           <string>Play</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="PauseButton">
-          <property name="text">
-           <string>Pause</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="StopButton">
-          <property name="text">
-           <string>Stop</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="NextButton">
-          <property name="text">
-           <string>Next</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="FavoriteButton">
-          <property name="text">
-           <string>Favorite</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="Phonon::SeekSlider" name="seekSlider"/>
@@ -89,9 +43,6 @@
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="Phonon::VolumeSlider" name="volumeSlider"/>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -140,14 +91,23 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <action name="actionLoad">
-   <property name="text">
-    <string>Load</string>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionPrev"/>
+   <addaction name="actionPlay"/>
+   <addaction name="actionPause"/>
+   <addaction name="actionStop"/>
+   <addaction name="actionNext"/>
+   <addaction name="actionFavorite"/>
+  </widget>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -156,17 +116,42 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionPlay">
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="text">
+    <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionPrev">
+   <property name="text">
+    <string>Prev</string>
+   </property>
+  </action>
+  <action name="actionNext">
+   <property name="text">
+    <string>Next</string>
+   </property>
+  </action>
+  <action name="actionFavorite">
+   <property name="text">
+    <string>Favorite</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>Phonon::SeekSlider</class>
    <extends>QWidget</extends>
    <header location="global">phonon/seekslider.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Phonon::VolumeSlider</class>
-   <extends>QWidget</extends>
-   <header location="global">phonon/volumeslider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

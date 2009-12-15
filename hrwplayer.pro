@@ -12,3 +12,4 @@ QT += phonon sql network
 HEADERS += hrwplayer.h
 FORMS += hrwplayer.ui
 SOURCES += hrwplayer.cpp main.cpp
+maemo5:FORMS = maemo-authors.ui maemo-play.ui maemo-songs.ui
