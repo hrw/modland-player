@@ -69,5 +69,6 @@ class HrwPlayer:public QObject
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
     void handleFavorite();
     void UI_tick(qint64 time);
+    void UI_TotalTime(qint64 time);
 
 };

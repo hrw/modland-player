@@ -228,6 +228,17 @@ void HrwPlayer::FinishedPlaying()
     PlaySelected(selectedItem);
 }
 
+void HrwPlayer::UI_TotalTime(qint64 time)
+{
+    QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
+
+#ifndef Q_WS_MAEMO_5
+    mainUI->TotalTimeLabel->setText(displayTime.toString("mm:ss"));
+#else
+    playUI->TotalTimeLabel->setText(displayTime.toString("mm:ss"));
+#endif
+}
+
 void HrwPlayer::UI_tick(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
@@ -354,6 +365,7 @@ void HrwPlayer::DoConnects()
 #endif
 
     connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
+    connect(mediaObject, SIGNAL(totalTimeChanged(qint64)), this, SLOT(UI_TotalTime(qint64)));
     connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
 	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
     connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
