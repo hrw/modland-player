@@ -13,8 +13,8 @@ HrwPlayer::HrwPlayer()
     metaInformationResolver = new Phonon::MediaObject(mainUI);
 #else
     authorsUI = new MaemoAuthorsUI();
-    songsUI   = new MaemoSongsUI();
-    playUI    = new MaemoPlayUI();
+    songsUI   = new MaemoSongsUI(authorsUI);
+    playUI    = new MaemoPlayUI(songsUI);
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, playUI);
     mediaObject = new Phonon::MediaObject(playUI);
     metaInformationResolver = new Phonon::MediaObject(playUI);
@@ -31,7 +31,7 @@ HrwPlayer::~HrwPlayer() {};
 
 void HrwPlayer::InitializeAuthorsList()
 {
-    qDebug() << "HrwPlayer::InitializemainUI->SongsList()";
+    qDebug() << "HrwPlayer::InitializeAuthorsList()";
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("utwory.sqlite");
@@ -49,6 +49,7 @@ void HrwPlayer::InitializeAuthorsList()
 
 void HrwPlayer::UI_PopulateAuthorsList(QStringList authors)
 {
+    qDebug() << "HrwPlayer::UI_PopulateAuthorsList" ;
 #ifndef MAEMO5
     mainUI->AuthorsList->insertItems(1, authors);
     PopulateSongs(mainUI->AuthorsList->item(0));
@@ -77,6 +78,9 @@ void HrwPlayer::JustPlay(QString fileName)
     QFileInfo fileinfo(fileName);
     UI_SetSongInfo("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
     mediaObject->play();
+#ifdef MAEMO5
+    playUI->show();
+#endif
 }
 
 void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
@@ -144,7 +148,7 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
     CurrentAuthor = selectedItem->text();
     qDebug() << "SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'";
     QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
-    
+
     query.first();
     query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
 
@@ -168,6 +172,7 @@ void HrwPlayer::UI_PopulateSongsList(QStringList songs)
 #else
     songsUI->SongsList->clear();
     songsUI->SongsList->insertItems(0, songs);
+    songsUI->show();
 #endif
 }
 
@@ -361,7 +366,5 @@ void HrwPlayer::show()
     mainUI->show();
 #else
     authorsUI->show();
-    songsUI->show();
-    playUI->show();
 #endif
 }
