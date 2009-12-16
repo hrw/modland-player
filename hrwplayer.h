@@ -16,9 +16,7 @@
 
 #include <QDebug>
 
-#define MAEMO5
-
-#ifndef MAEMO5
+#ifndef Q_WS_MAEMO_5
 	#include "desktopui.h"
 #else
 	#include "maemo-authorsui.h"
@@ -38,7 +36,7 @@ class HrwPlayer:public QObject
     public slots:
 
     private:
-#ifndef MAEMO5
+#ifndef Q_WS_MAEMO_5
 	DesktopUI *mainUI;
 #else
 	MaemoAuthorsUI *authorsUI;
