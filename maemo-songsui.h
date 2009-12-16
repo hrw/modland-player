@@ -16,7 +16,7 @@ class MaemoSongsUI:public QMainWindow, public Ui_MaemoSongsUI
     Q_OBJECT
 
     public:
-	MaemoSongsUI();
+	MaemoSongsUI(QWidget *parent = 0);
 	~MaemoSongsUI();
 
     public slots:

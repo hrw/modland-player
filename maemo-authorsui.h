@@ -16,7 +16,7 @@ class MaemoAuthorsUI:public QMainWindow, public Ui_MaemoAuthorsUI
     Q_OBJECT
 
     public:
-	MaemoAuthorsUI();
+	MaemoAuthorsUI(QWidget *parent = 0);
 	~MaemoAuthorsUI();
 
     public slots:

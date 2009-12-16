@@ -16,7 +16,7 @@ class MaemoPlayUI:public QMainWindow, public Ui_MaemoPlayUI
     Q_OBJECT
 
     public:
-	MaemoPlayUI();
+	MaemoPlayUI(QWidget *parent = 0);
 	~MaemoPlayUI();
 
     public slots:
