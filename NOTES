@@ -1,3 +1,6 @@
 Notes about planned changes.
 
-# Maemo5
+- add error handling
+  - fetch errors are not handled
+
+- keep URL to author in database - will solve "coop" type of authors
