@@ -1,11 +1,3 @@
-notki co do tego jak przerobić aplikację
+Notes about planned changes.
 
 # Maemo5
-
-odseparować UI od reszty aplikacji
-- maemo5 ma 3 QMainWindow, desktop ma tylko 1
-- HrwPlayer powinien zajmować się graniem i obsługą UI ale nie być UI
-- DesktopUI powinno być pochodne od QMainWindow i Ui_HrwPlayer
-- Maemo5 będzie mieć 3 klasyUI: AuthorsUI, SongsUI, PlayingUI pochodne od QMainWindow
-- HrwPlayer będzie tworzyć obiekty *UI w zależności od potrzeb
-- funkcje w HrwPlayer muszą obsługiwać różne UI - #ifdef/#else/#endif jak na razie
