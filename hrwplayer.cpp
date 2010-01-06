@@ -33,6 +33,8 @@ HrwPlayer::HrwPlayer()
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, playUI);
     mediaObject = new Phonon::MediaObject(playUI);
     metaInformationResolver = new Phonon::MediaObject(playUI);
+    scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
+    scroller2 = new QMaemo5KineticScroller(songsUI->SongsList);
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
