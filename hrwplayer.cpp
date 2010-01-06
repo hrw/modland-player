@@ -26,6 +26,7 @@ HrwPlayer::HrwPlayer()
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
     mediaObject = new Phonon::MediaObject(mainUI);
     metaInformationResolver = new Phonon::MediaObject(mainUI);
+    mainUI->progressBar->setVisible(false);
 #else
     authorsUI = new MaemoAuthorsUI();
     playUI    = new MaemoPlayUI(authorsUI);
@@ -34,6 +35,7 @@ HrwPlayer::HrwPlayer()
     metaInformationResolver = new Phonon::MediaObject(playUI);
     scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
     scroller2 = new QMaemo5KineticScroller(playUI->SongsList);
+    playUI->progressBar->setVisible(false);
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
