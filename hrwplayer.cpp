@@ -28,11 +28,12 @@ HrwPlayer::HrwPlayer()
     metaInformationResolver = new Phonon::MediaObject(mainUI);
 #else
     authorsUI = new MaemoAuthorsUI();
-    songsUI   = new MaemoSongsUI(authorsUI);
-    playUI    = new MaemoPlayUI(songsUI);
+    playUI    = new MaemoPlayUI(authorsUI);
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, playUI);
     mediaObject = new Phonon::MediaObject(playUI);
     metaInformationResolver = new Phonon::MediaObject(playUI);
+    scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
+    scroller2 = new QMaemo5KineticScroller(playUI->SongsList);
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
@@ -185,9 +186,9 @@ void HrwPlayer::UI_PopulateSongsList(QStringList songs)
     mainUI->SongsList->clear();
     mainUI->SongsList->insertItems(0, songs);
 #else
-    songsUI->SongsList->clear();
-    songsUI->SongsList->insertItems(0, songs);
-    songsUI->show();
+    playUI->SongsList->clear();
+    playUI->SongsList->insertItems(0, songs);
+    playUI->show();
 #endif
 }
 
@@ -196,7 +197,7 @@ bool HrwPlayer::UI_IsItLastSong()
 #ifndef Q_WS_MAEMO_5
     return (mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1));
 #else
-    return (songsUI->SongsList->currentRow() == (songsUI->SongsList->count() - 1));
+    return (playUI->SongsList->currentRow() == (playUI->SongsList->count() - 1));
 #endif
 }
 
@@ -223,9 +224,9 @@ void HrwPlayer::FinishedPlaying()
 	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(0);
 #else
-	selectedItem =  songsUI->SongsList->item(0);
+	selectedItem =  playUI->SongsList->item(0);
 	authorsUI->AuthorsList->setCurrentRow(authorsUI->AuthorsList->currentRow() + 1);
-	songsUI->SongsList->setCurrentRow(0);
+	playUI->SongsList->setCurrentRow(0);
 #endif
     }
     else
@@ -234,8 +235,8 @@ void HrwPlayer::FinishedPlaying()
 	selectedItem =  mainUI->SongsList->item(mainUI->SongsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(mainUI->SongsList->currentRow() + 1);
 #else
-	selectedItem =  songsUI->SongsList->item(songsUI->SongsList->currentRow() + 1);
-	songsUI->SongsList->setCurrentRow(songsUI->SongsList->currentRow() + 1);
+	selectedItem =  playUI->SongsList->item(playUI->SongsList->currentRow() + 1);
+	playUI->SongsList->setCurrentRow(playUI->SongsList->currentRow() + 1);
 #endif
     }
 
@@ -375,7 +376,7 @@ void HrwPlayer::DoConnects()
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
 #else
     playUI->seekSlider->setMediaObject(mediaObject);
-    connect(songsUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
+    connect(playUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(authorsUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
 #endif
 

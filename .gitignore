@@ -4,3 +4,6 @@ Makefile
 moc_*
 ui_*
 .*
+modules
+tools
+utwory.sqlite

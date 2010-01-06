@@ -37,6 +37,7 @@
 	#include "maemo-authorsui.h"
 	#include "maemo-playui.h"
 	#include "maemo-songsui.h"
+	#include <QtMaemo5>
 #endif
 
 class HrwPlayer:public QObject
@@ -55,8 +56,9 @@ class HrwPlayer:public QObject
 	DesktopUI *mainUI;
 #else
 	MaemoAuthorsUI *authorsUI;
-	MaemoSongsUI   *songsUI;
 	MaemoPlayUI    *playUI;
+	QMaemo5KineticScroller *scroller1;
+	QMaemo5KineticScroller *scroller2;
 #endif
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
