@@ -26,7 +26,7 @@ HrwPlayer::HrwPlayer()
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
     mediaObject = new Phonon::MediaObject(mainUI);
     metaInformationResolver = new Phonon::MediaObject(mainUI);
-    mainUI->progressBar->setVisible(false);
+    progressDialog = new QProgressDialog(mainUI);
 #else
     authorsUI = new MaemoAuthorsUI();
     playUI    = new MaemoPlayUI(authorsUI);
@@ -35,10 +35,11 @@ HrwPlayer::HrwPlayer()
     metaInformationResolver = new Phonon::MediaObject(playUI);
     scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
     scroller2 = new QMaemo5KineticScroller(playUI->SongsList);
-    playUI->progressBar->setVisible(false);
+    progressDialog = new QProgressDialog(playUI);
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
+    progressDialog->setCancelButton(0);	// hide cancel button
 
     Phonon::createPath(mediaObject, audioOutput);
 
@@ -283,28 +284,18 @@ void HrwPlayer::FetchSong(QString fileName)
 
     qDebug() << "\t" << "FetchSong - after get" ;
 
-#ifndef Q_WS_MAEMO_5
-    mainUI->progressBar->reset();
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
-    mainUI->progressBar->setVisible(true);
-#else
-    playUI->progressBar->reset();
-    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
-    playUI->progressBar->setVisible(true);
-#endif
+    progressDialog->setLabelText("Fetching " + fileName);
+    progressDialog->show();
+    qDebug() << "\t" << "FetchSong - end" ;
 }
 
 void HrwPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
     qDebug() << "HrwPlayer::handleProgressBar()";
 
-#ifndef Q_WS_MAEMO_5
-    mainUI->progressBar->setMaximum(bytestotal);
-    mainUI->progressBar->setValue(bytesfetched);
-#else
-    playUI->progressBar->setMaximum(bytestotal);
-    playUI->progressBar->setValue(bytesfetched);
-#endif
+    progressDialog->setMaximum(bytestotal);
+    progressDialog->setValue(bytesfetched);
 }
 
 void HrwPlayer::downloadFinished(QNetworkReply *reply)
@@ -338,11 +329,6 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
 	    JustPlay(fileName);
 	}
     }
-#ifndef Q_WS_MAEMO_5
-    mainUI->progressBar->setVisible(false);
-#else
-    playUI->progressBar->setVisible(false);
-#endif
 }
 
 QString HrwPlayer::buildModuleName(QString title, bool localName)

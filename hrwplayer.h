@@ -28,6 +28,7 @@
 #include <QTime>
 #include <QtSql>
 #include <QListWidget>
+#include <QProgressDialog>
 
 #include <QDebug>
 
@@ -60,6 +61,7 @@ class HrwPlayer:public QObject
 	QMaemo5KineticScroller *scroller1;
 	QMaemo5KineticScroller *scroller2;
 #endif
+	QProgressDialog *progressDialog;
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
 	Phonon::AudioOutput *audioOutput;

@@ -46,28 +46,6 @@
       </item>
      </layout>
     </item>
-    <item row="2" column="1">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="value">
-       <number>24</number>
-      </property>
-      <property name="textVisible">
-       <bool>true</bool>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="invertedAppearance">
-       <bool>false</bool>
-      </property>
-      <property name="format">
-       <string>Downloaded: %p%</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
  </widget>
