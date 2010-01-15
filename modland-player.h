@@ -76,8 +76,7 @@ class ModlandPlayer:public QObject
 	void UI_SetSongInfo(QString title);
 	bool UI_IsItLastSong();
 	QListWidgetItem* UI_NextAuthorName();
-
-
+	QString modulePath;
 
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);

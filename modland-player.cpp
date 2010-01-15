@@ -27,6 +27,7 @@ ModlandPlayer::ModlandPlayer()
     mediaObject = new Phonon::MediaObject(mainUI);
     metaInformationResolver = new Phonon::MediaObject(mainUI);
     progressDialog = new QProgressDialog(mainUI);
+    modulePath = "/home/user/MyDocs/modland-player/modules/";
 #else
     authorsUI = new MaemoAuthorsUI();
     playUI    = new MaemoPlayUI(authorsUI);
@@ -36,6 +37,7 @@ ModlandPlayer::ModlandPlayer()
     scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
     scroller2 = new QMaemo5KineticScroller(playUI->SongsList);
     progressDialog = new QProgressDialog(playUI);
+    modulePath = "modules/";
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
@@ -286,8 +288,6 @@ void ModlandPlayer::FetchSong(QString fileName)
 
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
-    qDebug() << "\t" << "FetchSong - after get" ;
-
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
     progressDialog->setLabelText("Fetching " + fileName);
@@ -295,13 +295,29 @@ void ModlandPlayer::FetchSong(QString fileName)
     qDebug() << "\t" << "FetchSong - end" ;
 }
 
-void ModlandPlayer::handleError(QNetworkReply::NetworkError code)
+void ModlandPlayer::handleError(QNetworkReply::NetworkError errorcode)
 {
     qDebug() << "ModlandPlayer::handleError()";
-//    progressDialog->hide();
-//    QErrorMessage message;
-//    
-//    message.showMessage(reply->errorString());
+    progressDialog->hide();
+    
+    if (errorcode != QNetworkReply::NoError) 
+    {
+	QErrorMessage message;
+	QString errorValue;
+	QMetaObject meta = QNetworkReply::staticMetaObject;
+
+	for (int i=0; i < meta.enumeratorCount(); ++i) 
+	{
+	    QMetaEnum m = meta.enumerator(i);
+	    if (m.name() == QLatin1String("NetworkError")) 
+	    {
+		errorValue = QLatin1String(m.valueToKey(errorcode));
+		break;
+	    }
+	}
+
+	message.showMessage(errorValue);
+    }
 }
 
 void ModlandPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
@@ -321,21 +337,18 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
     if(reply->error())
     {
 	//TODO
-	qDebug() << "\t" << "downloadFinished todo ";
+	qDebug() << "\t" << "downloadFinished error: " + reply->errorString();
     }
     else
     {
-#ifndef Q_WS_MAEMO_5
-	QDir katalog("modules/");
-#else
-	QDir katalog("/home/user/MyDocs/modland-player/modules/");
-#endif
-	katalog.mkpath(CurrentAuthor);
+	QDir* katalog = new QDir();
+	katalog->mkpath(modulePath + CurrentAuthor);
 
 	QFileInfo fileinfo(url.path());
 
 	QString fileName = buildModuleName(fileinfo.baseName());
 
+	qDebug() << "\t" << "downloadFinished - module will be " + fileName;
 	QFile file(fileName);
 	if(file.open(QIODevice::WriteOnly))
 	{
@@ -346,6 +359,10 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 
 	    JustPlay(fileName);
 	}
+	else
+	{
+	    qDebug() << "\t downloadFinished with error: " + file.errorString();
+	}
     }
 }
 
@@ -354,7 +371,7 @@ QString ModlandPlayer::buildModuleName(QString title, bool localName)
     QString fullName;
 
     if(localName)
-	fullName.append("modules/");
+	fullName.append(modulePath);
 
     fullName += CurrentAuthor + "/" + title + ".mod";
 
