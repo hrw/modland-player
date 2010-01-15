@@ -37,7 +37,6 @@
 #else
 	#include "maemo-authorsui.h"
 	#include "maemo-playui.h"
-	#include "maemo-songsui.h"
 	#include <QtMaemo5>
 #endif
 
