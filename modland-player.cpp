@@ -53,7 +53,11 @@ void ModlandPlayer::InitializeAuthorsList()
     qDebug() << "ModlandPlayer::InitializeAuthorsList()";
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+#ifndef Q_WS_MAEMO_5
     db.setDatabaseName("utwory.sqlite");
+#else
+    db.setDatabaseName("/opt/hrw/modland-player/utwory.sqlite");
+#endif
     db.open();
 
     QSqlQuery query("SELECT id, title FROM authors ORDER BY title");
@@ -321,7 +325,11 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
     }
     else
     {
+#ifndef Q_WS_MAEMO_5
 	QDir katalog("modules/");
+#else
+	QDir katalog("/home/user/MyDocs/modland-player/modules/");
+#endif
 	katalog.mkpath(CurrentAuthor);
 
 	QFileInfo fileinfo(url.path());
