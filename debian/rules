@@ -48,11 +48,11 @@ install: build
 
 	@install -d $(CURDIR)/debian/modland-player/opt/hrw/modland-player
 	@install -d $(CURDIR)/debian/modland-player/usr/share/icons/hildon/apps/64x64/
-	@install -d $(CURDIR)/debian/modland-player/usr/share/applications
+	@install -d $(CURDIR)/debian/modland-player/usr/share/applications/hildon/
 	@install -m 0755 modland-player $(CURDIR)/debian/modland-player/opt/hrw/modland-player
 	@install -m 0644 utwory.sqlite  $(CURDIR)/debian/modland-player/opt/hrw/modland-player
 	@install -m 0644 modland-player.png $(CURDIR)/debian/modland-player/usr/share/icons/hildon/apps/64x64/
-	@install -m 0644 modland-player.desktop $(CURDIR)/debian/modland-player/usr/share/applications
+	@install -m 0644 modland-player.desktop $(CURDIR)/debian/modland-player/usr/share/applications/hildon
 
 
 # Build architecture-independent files here.
