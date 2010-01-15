@@ -16,14 +16,14 @@
 
 #include <QApplication>
 
-#include "hrwplayer.h"
+#include "modland-player.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    app.setApplicationName("Hrw Qt Player");
-    HrwPlayer player;
+    app.setApplicationName("Modland Player");
+    ModlandPlayer player;
 
     player.show();
     return app.exec();

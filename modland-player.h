@@ -41,13 +41,13 @@
 	#include <QtMaemo5>
 #endif
 
-class HrwPlayer:public QObject
+class ModlandPlayer:public QObject
 {
     Q_OBJECT
 
     public:
-	HrwPlayer();
-	~HrwPlayer();
+	ModlandPlayer();
+	~ModlandPlayer();
 	void show();
 
     public slots:

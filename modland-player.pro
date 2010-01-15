@@ -9,8 +9,8 @@ INCLUDEPATH += .
 QT += phonon sql network
 
 # Input
-HEADERS += hrwplayer.h
-SOURCES += hrwplayer.cpp main.cpp 
+HEADERS += modland-player.h
+SOURCES += modland-player.cpp main.cpp
 
 !maemo5 {
 FORMS += desktop.ui

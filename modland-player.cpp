@@ -13,13 +13,13 @@
 ** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#include "hrwplayer.h"
+#include "modland-player.h"
 
 QString moduleFileName;
 
-HrwPlayer::HrwPlayer()
+ModlandPlayer::ModlandPlayer()
 {
-    qDebug() << "HrwPlayer::HrwPlayer()";
+    qDebug() << "ModlandPlayer::ModlandPlayer()";
 
 #ifndef Q_WS_MAEMO_5
     mainUI = new DesktopUI();
@@ -46,11 +46,11 @@ HrwPlayer::HrwPlayer()
     DoConnects();
     InitializeAuthorsList();
 }
-HrwPlayer::~HrwPlayer() {};
+ModlandPlayer::~ModlandPlayer() {};
 
-void HrwPlayer::InitializeAuthorsList()
+void ModlandPlayer::InitializeAuthorsList()
 {
-    qDebug() << "HrwPlayer::InitializeAuthorsList()";
+    qDebug() << "ModlandPlayer::InitializeAuthorsList()";
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("utwory.sqlite");
@@ -66,9 +66,9 @@ void HrwPlayer::InitializeAuthorsList()
     UI_PopulateAuthorsList(authors);
 };
 
-void HrwPlayer::UI_PopulateAuthorsList(QStringList authors)
+void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
 {
-    qDebug() << "HrwPlayer::UI_PopulateAuthorsList" ;
+    qDebug() << "ModlandPlayer::UI_PopulateAuthorsList" ;
 #ifndef Q_WS_MAEMO_5
     mainUI->AuthorsList->insertItems(1, authors);
     PopulateSongs(mainUI->AuthorsList->item(0));
@@ -78,7 +78,7 @@ void HrwPlayer::UI_PopulateAuthorsList(QStringList authors)
 #endif
 }
 
-void HrwPlayer::UI_SetSongInfo(QString title)
+void ModlandPlayer::UI_SetSongInfo(QString title)
 {
 #ifndef Q_WS_MAEMO_5
     mainUI->TitleLabel->setText(title);
@@ -89,9 +89,9 @@ void HrwPlayer::UI_SetSongInfo(QString title)
 #endif
 }
 
-void HrwPlayer::JustPlay(QString fileName)
+void ModlandPlayer::JustPlay(QString fileName)
 {
-    qDebug() << "HrwPlayer::JustPlay()";
+    qDebug() << "ModlandPlayer::JustPlay()";
 
     mediaObject->setCurrentSource(fileName);
     QFileInfo fileinfo(fileName);
@@ -102,9 +102,9 @@ void HrwPlayer::JustPlay(QString fileName)
 #endif
 }
 
-void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
+void ModlandPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
 {
-    qDebug() << "HrwPlayer::StateChanged()";
+    qDebug() << "ModlandPlayer::StateChanged()";
 
     switch (newState)
     {
@@ -140,9 +140,9 @@ void HrwPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState *
     }
 }
 
-void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
+void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
 {
-    qDebug() << "HrwPlayer::PlaySelected()";
+    qDebug() << "ModlandPlayer::PlaySelected()";
 
     QString fileName = buildModuleName(selectedItem->text());
 
@@ -160,9 +160,9 @@ void HrwPlayer::PlaySelected(QListWidgetItem* selectedItem)
     }
 }
 
-void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
+void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 {
-    qDebug() << "HrwPlayer::PopulateSongs()";
+    qDebug() << "ModlandPlayer::PopulateSongs()";
 
     CurrentAuthor = selectedItem->text();
     qDebug() << "SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'";
@@ -183,7 +183,7 @@ void HrwPlayer::PopulateSongs(QListWidgetItem* selectedItem)
     UI_PopulateSongsList(songs);
 }
 
-void HrwPlayer::UI_PopulateSongsList(QStringList songs)
+void ModlandPlayer::UI_PopulateSongsList(QStringList songs)
 {
 #ifndef Q_WS_MAEMO_5
     mainUI->SongsList->clear();
@@ -195,7 +195,7 @@ void HrwPlayer::UI_PopulateSongsList(QStringList songs)
 #endif
 }
 
-bool HrwPlayer::UI_IsItLastSong()
+bool ModlandPlayer::UI_IsItLastSong()
 {
 #ifndef Q_WS_MAEMO_5
     return (mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1));
@@ -204,7 +204,7 @@ bool HrwPlayer::UI_IsItLastSong()
 #endif
 }
 
-QListWidgetItem* HrwPlayer::UI_NextAuthorName()
+QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
 {
 #ifndef Q_WS_MAEMO_5
     return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
@@ -213,9 +213,9 @@ QListWidgetItem* HrwPlayer::UI_NextAuthorName()
 #endif
 }
 
-void HrwPlayer::FinishedPlaying()
+void ModlandPlayer::FinishedPlaying()
 {
-    qDebug() << "HrwPlayer::FinishedPlaying()";
+    qDebug() << "ModlandPlayer::FinishedPlaying()";
 
     QListWidgetItem* selectedItem;
 
@@ -247,7 +247,7 @@ void HrwPlayer::FinishedPlaying()
     PlaySelected(selectedItem);
 }
 
-void HrwPlayer::UI_TotalTime(qint64 time)
+void ModlandPlayer::UI_TotalTime(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
@@ -258,7 +258,7 @@ void HrwPlayer::UI_TotalTime(qint64 time)
 #endif
 }
 
-void HrwPlayer::UI_tick(qint64 time)
+void ModlandPlayer::UI_tick(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
@@ -269,9 +269,9 @@ void HrwPlayer::UI_tick(qint64 time)
 #endif
 }
 
-void HrwPlayer::FetchSong(QString fileName)
+void ModlandPlayer::FetchSong(QString fileName)
 {
-    qDebug() << "HrwPlayer::FetchSong()";
+    qDebug() << "ModlandPlayer::FetchSong()";
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
@@ -290,17 +290,17 @@ void HrwPlayer::FetchSong(QString fileName)
     qDebug() << "\t" << "FetchSong - end" ;
 }
 
-void HrwPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
+void ModlandPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
-    qDebug() << "HrwPlayer::handleProgressBar()";
+    qDebug() << "ModlandPlayer::handleProgressBar()";
 
     progressDialog->setMaximum(bytestotal);
     progressDialog->setValue(bytesfetched);
 }
 
-void HrwPlayer::downloadFinished(QNetworkReply *reply)
+void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 {
-    qDebug() << "HrwPlayer::downloadFinished()";
+    qDebug() << "ModlandPlayer::downloadFinished()";
 
     QUrl url = reply->url();
 
@@ -331,7 +331,7 @@ void HrwPlayer::downloadFinished(QNetworkReply *reply)
     }
 }
 
-QString HrwPlayer::buildModuleName(QString title, bool localName)
+QString ModlandPlayer::buildModuleName(QString title, bool localName)
 {
     QString fullName;
 
@@ -343,15 +343,15 @@ QString HrwPlayer::buildModuleName(QString title, bool localName)
     return fullName;
 }
 
-void HrwPlayer::handleFavorite()
+void ModlandPlayer::handleFavorite()
 {
-    qDebug() << "HrwPlayer::handleFavorite()";
+    qDebug() << "ModlandPlayer::handleFavorite()";
 
 }
 
-void HrwPlayer::DoConnects()
+void ModlandPlayer::DoConnects()
 {
-    qDebug() << "HrwPlayer::DoConnects()";
+    qDebug() << "ModlandPlayer::DoConnects()";
 
 #ifndef Q_WS_MAEMO_5
     mainUI->seekSlider->setMediaObject(mediaObject);
@@ -376,7 +376,7 @@ void HrwPlayer::DoConnects()
 
 }
 
-void HrwPlayer::show()
+void ModlandPlayer::show()
 {
 #ifndef Q_WS_MAEMO_5
     mainUI->show();
