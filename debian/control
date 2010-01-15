@@ -1,0 +1,15 @@
+Source: modland-player
+Section: user/multimedia
+Priority: extra
+Maintainer: Marcin Juszkiewicz <marcin@juszkiewicz.com.pl>
+Build-Depends: debhelper (>= 5), libqt4-maemo5-dev
+Standards-Version: 3.8.3
+
+Package: modland-player
+Architecture: any
+Depends: ${shlibs:Depends}, mod-support
+Description: Player for Modland.com collection of Protracker modules
+ Modland.com collects computer music from most of platforms. This application
+ handle only Protracker ones.
+ . 
+ For today there are several thousands of them available.
