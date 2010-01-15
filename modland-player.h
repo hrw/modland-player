@@ -29,7 +29,7 @@
 #include <QtSql>
 #include <QListWidget>
 #include <QProgressDialog>
-
+#include <QErrorMessage>
 #include <QDebug>
 
 #ifndef Q_WS_MAEMO_5
@@ -79,6 +79,7 @@ class ModlandPlayer:public QObject
 	QListWidgetItem* UI_NextAuthorName();
 
 
+
     private slots:
     void StateChanged(Phonon::State newState, Phonon::State oldState);
     void PlaySelected(QListWidgetItem* selectedItem);
@@ -86,6 +87,7 @@ class ModlandPlayer:public QObject
     void FinishedPlaying();
     void downloadFinished(QNetworkReply* reply);
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
+    void handleError(QNetworkReply::NetworkError code);
     void handleFavorite();
     void UI_tick(qint64 time);
     void UI_TotalTime(qint64 time);

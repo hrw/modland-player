@@ -285,9 +285,19 @@ void ModlandPlayer::FetchSong(QString fileName)
     qDebug() << "\t" << "FetchSong - after get" ;
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
     progressDialog->setLabelText("Fetching " + fileName);
     progressDialog->show();
     qDebug() << "\t" << "FetchSong - end" ;
+}
+
+void ModlandPlayer::handleError(QNetworkReply::NetworkError code)
+{
+    qDebug() << "ModlandPlayer::handleError()";
+//    progressDialog->hide();
+//    QErrorMessage message;
+//    
+//    message.showMessage(reply->errorString());
 }
 
 void ModlandPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
