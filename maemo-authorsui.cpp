@@ -24,3 +24,25 @@ MaemoAuthorsUI::MaemoAuthorsUI(QWidget *parent): QMainWindow(parent)
 }
 
 MaemoAuthorsUI::~MaemoAuthorsUI() {};
+
+bool MaemoAuthorsUI::event(QEvent *ev)
+{
+    switch (ev->type()) {
+    case QEvent::WindowActivate:
+        QDBusConnection::systemBus().call(
+            QDBusMessage::createMethodCall(MCE_SERVICE, MCE_REQUEST_PATH,
+                                           MCE_REQUEST_IF,
+                                           MCE_ACCELEROMETER_ENABLE_REQ));
+        break;
+    case QEvent::WindowDeactivate:
+        QDBusConnection::systemBus().call(
+            QDBusMessage::createMethodCall(MCE_SERVICE, MCE_REQUEST_PATH,
+                                           MCE_REQUEST_IF,
+                                           MCE_ACCELEROMETER_DISABLE_REQ));
+        break;
+    default:
+        break;
+    }
+
+    return QWidget::event(ev);
+}

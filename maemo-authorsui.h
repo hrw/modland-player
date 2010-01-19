@@ -23,6 +23,10 @@
 #include <QTime>
 #include <QtSql>
 #include <QMessageBox>
+#include <QtDBus>
+
+#include <mce/mode-names.h>
+#include <mce/dbus-names.h>
 
 #include "ui_maemo-authors.h"
 
@@ -39,4 +43,7 @@ class MaemoAuthorsUI:public QMainWindow, public Ui_MaemoAuthorsUI
     private:
 
     private slots:
+
+    protected:
+	bool event(QEvent *ev);
 };

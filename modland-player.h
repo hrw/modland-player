@@ -37,7 +37,12 @@
 #else
 	#include "maemo-authorsui.h"
 	#include "maemo-playui.h"
+
 	#include <QtMaemo5>
+        #include <QtDBus>
+
+        #include <mce/mode-names.h>
+        #include <mce/dbus-names.h>
 #endif
 
 class ModlandPlayer:public QObject
@@ -89,5 +94,8 @@ class ModlandPlayer:public QObject
     void handleFavorite();
     void UI_tick(qint64 time);
     void UI_TotalTime(qint64 time);
+#ifdef Q_WS_MAEMO_5
+    void orientationChanged(const QString& orientation);
+#endif
 
 };

@@ -22,5 +22,5 @@ maemo5 {
 HEADERS += maemo-authorsui.h maemo-playui.h
 SOURCES += maemo-authorsui.cpp maemo-playui.cpp
 FORMS = maemo-authors.ui maemo-play.ui
-QT += maemo5
+QT += maemo5 dbus
 }
