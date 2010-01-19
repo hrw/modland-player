@@ -34,8 +34,6 @@ ModlandPlayer::ModlandPlayer()
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, playUI);
     mediaObject = new Phonon::MediaObject(playUI);
     metaInformationResolver = new Phonon::MediaObject(playUI);
-    scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
-    scroller2 = new QMaemo5KineticScroller(playUI->SongsList);
     progressDialog = new QProgressDialog(playUI);
     modulePath = "/home/user/MyDocs/modland-player/modules/";
 

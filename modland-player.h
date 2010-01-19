@@ -62,8 +62,6 @@ class ModlandPlayer:public QObject
 #else
 	MaemoAuthorsUI *authorsUI;
 	MaemoPlayUI    *playUI;
-	QMaemo5KineticScroller *scroller1;
-	QMaemo5KineticScroller *scroller2;
 #endif
 	QProgressDialog *progressDialog;
 	Phonon::MediaObject *mediaObject;
