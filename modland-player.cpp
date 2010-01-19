@@ -27,7 +27,7 @@ ModlandPlayer::ModlandPlayer()
     mediaObject = new Phonon::MediaObject(mainUI);
     metaInformationResolver = new Phonon::MediaObject(mainUI);
     progressDialog = new QProgressDialog(mainUI);
-    modulePath = "/home/user/MyDocs/modland-player/modules/";
+    modulePath = "modules/";
 #else
     authorsUI = new MaemoAuthorsUI();
     playUI    = new MaemoPlayUI(authorsUI);
@@ -37,7 +37,7 @@ ModlandPlayer::ModlandPlayer()
     scroller1 = new QMaemo5KineticScroller(authorsUI->AuthorsList);
     scroller2 = new QMaemo5KineticScroller(playUI->SongsList);
     progressDialog = new QProgressDialog(playUI);
-    modulePath = "modules/";
+    modulePath = "/home/user/MyDocs/modland-player/modules/";
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
