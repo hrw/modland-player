@@ -13,11 +13,11 @@
 ** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#include <Phonon/AudioOutput>
-#include <Phonon/BackendCapabilities>
-#include <Phonon/MediaObject>
-#include <Phonon/SeekSlider>
-#include <Phonon/VolumeSlider>
+#include <phonon/AudioOutput>
+#include <phonon/BackendCapabilities>
+#include <phonon/MediaObject>
+#include <phonon/SeekSlider>
+#include <phonon/VolumeSlider>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
