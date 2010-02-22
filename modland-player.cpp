@@ -429,13 +429,13 @@ void ModlandPlayer::orientationChanged(const QString &newOrientation)
 {
     if (newOrientation == QLatin1String(MCE_ORIENTATION_PORTRAIT))
     {
-        authorsUI->setAttribute(Qt::WA_Maemo5ForcePortraitOrientation, true);
-        playUI->setAttribute(Qt::WA_Maemo5ForcePortraitOrientation, true);
+        authorsUI->setAttribute(Qt::WA_Maemo5PortraitOrientation, true);
+        playUI->setAttribute(Qt::WA_Maemo5PortraitOrientation, true);
     }
     else
     {
-        authorsUI->setAttribute(Qt::WA_Maemo5ForceLandscapeOrientation, true);
-        playUI->setAttribute(Qt::WA_Maemo5ForceLandscapeOrientation, true);
+        authorsUI->setAttribute(Qt::WA_Maemo5LandscapeOrientation, true);
+        playUI->setAttribute(Qt::WA_Maemo5LandscapeOrientation, true);
     }
 }
 
