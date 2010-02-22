@@ -36,12 +36,6 @@ ModlandPlayer::ModlandPlayer()
     metaInformationResolver = new Phonon::MediaObject(playUI);
     progressDialog = new QProgressDialog(playUI);
     modulePath = "/home/user/MyDocs/modland-player/modules/";
-
-    // rotation stuff
-    QDBusConnection::systemBus().connect(QString(), MCE_SIGNAL_PATH, MCE_SIGNAL_IF,
-	    MCE_DEVICE_ORIENTATION_SIG,
-	    this,
-	    SLOT(orientationChanged(QString)));
 #endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
@@ -423,20 +417,3 @@ void ModlandPlayer::show()
     authorsUI->show();
 #endif
 }
-
-#ifdef Q_WS_MAEMO_5
-void ModlandPlayer::orientationChanged(const QString &newOrientation)
-{
-    if (newOrientation == QLatin1String(MCE_ORIENTATION_PORTRAIT))
-    {
-        authorsUI->setAttribute(Qt::WA_Maemo5PortraitOrientation, true);
-        playUI->setAttribute(Qt::WA_Maemo5PortraitOrientation, true);
-    }
-    else
-    {
-        authorsUI->setAttribute(Qt::WA_Maemo5LandscapeOrientation, true);
-        playUI->setAttribute(Qt::WA_Maemo5LandscapeOrientation, true);
-    }
-}
-
-#endif

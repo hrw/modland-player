@@ -21,6 +21,7 @@ MaemoAuthorsUI::MaemoAuthorsUI(QWidget *parent): QMainWindow(parent)
 
     setupUi(this);
     setAttribute(Qt::WA_Maemo5StackedWindow);
+    setAttribute(Qt::WA_Maemo5AutoOrientation, true);
 }
 
 MaemoAuthorsUI::~MaemoAuthorsUI() {};
