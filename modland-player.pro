@@ -12,15 +12,6 @@ QT += phonon sql network
 HEADERS += modland-player.h
 SOURCES += modland-player.cpp main.cpp
 
-!maemo5 {
 FORMS += desktop.ui
 HEADERS += desktopui.h
 SOURCES += desktopui.cpp
-}
-
-maemo5 {
-HEADERS += maemo-authorsui.h maemo-playui.h
-SOURCES += maemo-authorsui.cpp maemo-playui.cpp
-FORMS = maemo-authors.ui maemo-play.ui
-QT += maemo5 dbus
-}
