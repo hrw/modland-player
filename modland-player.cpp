@@ -21,22 +21,12 @@ ModlandPlayer::ModlandPlayer()
 {
     qDebug() << "ModlandPlayer::ModlandPlayer()";
 
-#ifndef Q_WS_MAEMO_5
     mainUI = new DesktopUI();
     audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
     mediaObject = new Phonon::MediaObject(mainUI);
     metaInformationResolver = new Phonon::MediaObject(mainUI);
     progressDialog = new QProgressDialog(mainUI);
     modulePath = "modules/";
-#else
-    authorsUI = new MaemoAuthorsUI();
-    playUI    = new MaemoPlayUI(authorsUI);
-    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, playUI);
-    mediaObject = new Phonon::MediaObject(playUI);
-    metaInformationResolver = new Phonon::MediaObject(playUI);
-    progressDialog = new QProgressDialog(playUI);
-    modulePath = "/home/user/MyDocs/modland-player/modules/";
-#endif
 
     mediaObject->setTickInterval(1000); // for remaining time display
     progressDialog->setCancelButton(0);	// hide cancel button
@@ -53,11 +43,7 @@ void ModlandPlayer::InitializeAuthorsList()
     qDebug() << "ModlandPlayer::InitializeAuthorsList()";
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-#ifndef Q_WS_MAEMO_5
     db.setDatabaseName("utwory.sqlite");
-#else
-    db.setDatabaseName("/opt/hrw/modland-player/utwory.sqlite");
-#endif
     db.open();
 
     QSqlQuery query("SELECT id, title FROM authors ORDER BY title");
@@ -73,24 +59,14 @@ void ModlandPlayer::InitializeAuthorsList()
 void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
 {
     qDebug() << "ModlandPlayer::UI_PopulateAuthorsList" ;
-#ifndef Q_WS_MAEMO_5
     mainUI->AuthorsList->insertItems(1, authors);
     PopulateSongs(mainUI->AuthorsList->item(0));
-#else
-    authorsUI->AuthorsList->insertItems(1, authors);
-    PopulateSongs(authorsUI->AuthorsList->item(0));
-#endif
 }
 
 void ModlandPlayer::UI_SetSongInfo(QString title)
 {
-#ifndef Q_WS_MAEMO_5
     mainUI->TitleLabel->setText(title);
     mainUI->TimeLabel->setText("00:00");
-#else
-    playUI->TitleLabel->setText(title);
-    playUI->TimeLabel->setText("00:00");
-#endif
 }
 
 void ModlandPlayer::JustPlay(QString fileName)
@@ -101,9 +77,6 @@ void ModlandPlayer::JustPlay(QString fileName)
     QFileInfo fileinfo(fileName);
     UI_SetSongInfo("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
     mediaObject->play();
-#ifdef Q_WS_MAEMO_5
-    playUI->show();
-#endif
 }
 
 void ModlandPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
@@ -189,32 +162,18 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 
 void ModlandPlayer::UI_PopulateSongsList(QStringList songs)
 {
-#ifndef Q_WS_MAEMO_5
     mainUI->SongsList->clear();
     mainUI->SongsList->insertItems(0, songs);
-#else
-    playUI->SongsList->clear();
-    playUI->SongsList->insertItems(0, songs);
-    playUI->show();
-#endif
 }
 
 bool ModlandPlayer::UI_IsItLastSong()
 {
-#ifndef Q_WS_MAEMO_5
     return (mainUI->SongsList->currentRow() == (mainUI->SongsList->count() - 1));
-#else
-    return (playUI->SongsList->currentRow() == (playUI->SongsList->count() - 1));
-#endif
 }
 
 QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
 {
-#ifndef Q_WS_MAEMO_5
     return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
-#else
-    return authorsUI->AuthorsList->item(authorsUI->AuthorsList->currentRow() + 1);
-#endif
 }
 
 void ModlandPlayer::FinishedPlaying()
@@ -226,25 +185,14 @@ void ModlandPlayer::FinishedPlaying()
     if(UI_IsItLastSong())
     {
 	PopulateSongs(UI_NextAuthorName());
-#ifndef Q_WS_MAEMO_5
 	selectedItem =  mainUI->SongsList->item(0);
 	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(0);
-#else
-	selectedItem =  playUI->SongsList->item(0);
-	authorsUI->AuthorsList->setCurrentRow(authorsUI->AuthorsList->currentRow() + 1);
-	playUI->SongsList->setCurrentRow(0);
-#endif
     }
     else
     {
-#ifndef Q_WS_MAEMO_5
 	selectedItem =  mainUI->SongsList->item(mainUI->SongsList->currentRow() + 1);
 	mainUI->SongsList->setCurrentRow(mainUI->SongsList->currentRow() + 1);
-#else
-	selectedItem =  playUI->SongsList->item(playUI->SongsList->currentRow() + 1);
-	playUI->SongsList->setCurrentRow(playUI->SongsList->currentRow() + 1);
-#endif
     }
 
     qDebug() << "\t" << "play?";
@@ -255,22 +203,14 @@ void ModlandPlayer::UI_TotalTime(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
-#ifndef Q_WS_MAEMO_5
     mainUI->TotalTimeLabel->setText(displayTime.toString("mm:ss"));
-#else
-    playUI->TotalTimeLabel->setText(displayTime.toString("mm:ss"));
-#endif
 }
 
 void ModlandPlayer::UI_tick(qint64 time)
 {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
 
-#ifndef Q_WS_MAEMO_5
     mainUI->TimeLabel->setText(displayTime.toString("mm:ss"));
-#else
-    playUI->TimeLabel->setText(displayTime.toString("mm:ss"));
-#endif
 }
 
 void ModlandPlayer::FetchSong(QString fileName)
@@ -386,7 +326,6 @@ void ModlandPlayer::DoConnects()
 {
     qDebug() << "ModlandPlayer::DoConnects()";
 
-#ifndef Q_WS_MAEMO_5
     mainUI->seekSlider->setMediaObject(mediaObject);
     connect(mainUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(mainUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
@@ -395,11 +334,6 @@ void ModlandPlayer::DoConnects()
     connect(mainUI->actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
     connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
-#else
-    playUI->seekSlider->setMediaObject(mediaObject);
-    connect(playUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
-    connect(authorsUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
-#endif
 
     connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
     connect(mediaObject, SIGNAL(totalTimeChanged(qint64)), this, SLOT(UI_TotalTime(qint64)));
@@ -411,9 +345,5 @@ void ModlandPlayer::DoConnects()
 
 void ModlandPlayer::show()
 {
-#ifndef Q_WS_MAEMO_5
     mainUI->show();
-#else
-    authorsUI->show();
-#endif
 }

@@ -32,14 +32,7 @@
 #include <QErrorMessage>
 #include <QDebug>
 
-#ifndef Q_WS_MAEMO_5
-	#include "desktopui.h"
-#else
-	#include "maemo-authorsui.h"
-	#include "maemo-playui.h"
-
-	#include <QtMaemo5>
-#endif
+#include "desktopui.h"
 
 class ModlandPlayer:public QObject
 {
@@ -53,12 +46,7 @@ class ModlandPlayer:public QObject
     public slots:
 
     private:
-#ifndef Q_WS_MAEMO_5
 	DesktopUI *mainUI;
-#else
-	MaemoAuthorsUI *authorsUI;
-	MaemoPlayUI    *playUI;
-#endif
 	QProgressDialog *progressDialog;
 	Phonon::MediaObject *mediaObject;
 	Phonon::MediaObject *metaInformationResolver;
