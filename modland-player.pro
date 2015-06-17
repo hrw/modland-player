@@ -3,10 +3,11 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = modland-player
 DEPENDPATH += .
-INCLUDEPATH += .
-QT += phonon sql network
+INCLUDEPATH += . /usr/include/phonon4qt5 /usr/include/qt5/QtWidgets
+QT += sql network widgets
+LIBS += -lphonon4qt5
 
 # Input
 HEADERS += modland-player.h
