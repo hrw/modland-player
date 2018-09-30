@@ -12,3 +12,4 @@ QT += network sql widgets
 FORMS += desktop.ui
 HEADERS += desktopui.h modland-player.h
 SOURCES += desktopui.cpp modland-player.cpp main.cpp alsa.cc
+CONFIG += c++1z

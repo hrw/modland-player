@@ -30,6 +30,7 @@ ModlandPlayer::ModlandPlayer()
     sound_init(44100, 2);
 
     xmp_ctx = xmp_create_context();
+    playerThread = new QThread();
 }
 
 ModlandPlayer::~ModlandPlayer()
@@ -85,7 +86,6 @@ void ModlandPlayer::JustPlay(QString fileName)
     qDebug() << "ModlandPlayer::JustPlay()";
 
     struct xmp_module_info mi;
-    struct xmp_frame_info fi;
 
     QByteArray ba = fileName.toLocal8Bit();
     xmp_load_module(xmp_ctx, ba.data());
@@ -93,6 +93,21 @@ void ModlandPlayer::JustPlay(QString fileName)
 
     xmp_get_module_info(xmp_ctx, &mi);
     UI_SetSongInfo(mi.mod);
+
+    if( playerThread->isRunning() )
+    {
+        playerThread->exit();
+        playerThread->wait();
+    }
+
+    playerThread = QThread::create(PlayModule, xmp_ctx);
+    playerThread->setObjectName(mi.mod->name);
+    playerThread->start();
+}
+
+void PlayModule(xmp_context xmp_ctx)
+{
+    struct xmp_frame_info fi;
 
     if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
 
@@ -104,6 +119,11 @@ void ModlandPlayer::JustPlay(QString fileName)
 		    if (fi.loop_count > 0)
 			    break;
 
+                    if ( QThread::currentThread()->isInterruptionRequested() )
+                    {
+                        qDebug() << "PlayModule asked to quit";
+                        break;
+                    }
 		    sound_play(fi.buffer, fi.buffer_size);
 
 		    if (fi.row != row) {
@@ -113,7 +133,7 @@ void ModlandPlayer::JustPlay(QString fileName)
 	    xmp_end_player(xmp_ctx);
     }
 
-    xmp_release_module(xmp_ctx);
+    // xmp_release_module(xmp_ctx);
 }
 
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)

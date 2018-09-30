@@ -30,6 +30,7 @@
 #include <QProgressDialog>
 #include <QErrorMessage>
 #include <QDebug>
+#include <QThread>
 
 #include "desktopui.h"
 
@@ -61,6 +62,7 @@ class ModlandPlayer:public QObject
 	QListWidgetItem* UI_NextAuthorName();
 	QString modulePath;
 	xmp_context xmp_ctx;
+	QThread *playerThread;
 
     private slots:
     void PlaySelected(QListWidgetItem* selectedItem);
@@ -73,3 +75,4 @@ class ModlandPlayer:public QObject
     void UI_tick(qint64 time);
     void UI_TotalTime(qint64 time);
 };
+void PlayModule(xmp_context xmp_ctx);
