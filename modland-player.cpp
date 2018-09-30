@@ -22,10 +22,7 @@ ModlandPlayer::ModlandPlayer()
     qDebug() << "ModlandPlayer::ModlandPlayer()";
 
     mainUI = new DesktopUI();
-    progressDialog = new QProgressDialog(mainUI);
     modulePath = "modules/";
-
-    progressDialog->setCancelButton(0);	// hide cancel button
 
     DoConnects();
     InitializeAuthorsList();
@@ -90,7 +87,6 @@ void ModlandPlayer::JustPlay(QString fileName)
     struct xmp_module_info mi;
     struct xmp_frame_info fi;
 
-    QFileInfo fileinfo(fileName);
     QByteArray ba = fileName.toLocal8Bit();
     xmp_load_module(xmp_ctx, ba.data());
     /* Show module data */
@@ -231,15 +227,15 @@ void ModlandPlayer::FetchSong(QString fileName)
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
-    progressDialog->setLabelText("Fetching " + fileName);
-    progressDialog->show();
+    mainUI->progressBar->setFormat("Fetching " + fileName);
+    mainUI->progressBar->show();
     qDebug() << "\t" << "FetchSong - end" ;
 }
 
 void ModlandPlayer::handleError(QNetworkReply::NetworkError errorcode)
 {
     qDebug() << "ModlandPlayer::handleError()";
-    progressDialog->hide();
+    mainUI->progressBar->hide();
     
     if (errorcode != QNetworkReply::NoError) 
     {
@@ -265,8 +261,8 @@ void ModlandPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
     qDebug() << "ModlandPlayer::handleProgressBar()";
 
-    progressDialog->setMaximum(bytestotal);
-    progressDialog->setValue(bytesfetched);
+    mainUI->progressBar->setMaximum(bytestotal);
+    mainUI->progressBar->setValue(bytesfetched);
 }
 
 void ModlandPlayer::downloadFinished(QNetworkReply *reply)
@@ -297,6 +293,8 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 	    file.close();
 
 	    qDebug() << "\t" << "downloadFinished - module fetched";
+            mainUI->progressBar->resetFormat();
+            mainUI->progressBar->reset();
 
 	    JustPlay(fileName);
 	}

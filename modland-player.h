@@ -46,7 +46,7 @@ class ModlandPlayer:public QObject
 
     private:
 	DesktopUI *mainUI;
-	QProgressDialog *progressDialog;
+	QProgressBar *progressBar;
 	QString CurrentAuthor;
 	void InitializeAuthorsList();
 	void FetchSong(QString fileName);
