@@ -6,30 +6,78 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>922</width>
-    <height>528</height>
+    <width>1266</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Modland Player</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QListWidget" name="AuthorsList"/>
-      <widget class="QListWidget" name="SongsList"/>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QListWidget" name="AuthorsList"/>
+      </item>
+      <item>
+       <widget class="QListWidget" name="SongsList"/>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QLabel" name="TitleLabel">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="TitleLabel">
+            <property name="text">
+             <string>Title</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="TitleInfo">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="TypeLabel">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="TypeInfo">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Instruments</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextBrowser" name="InstrumentsList">
+            <property name="font">
+             <font>
+              <family>Monospace</family>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -50,8 +98,8 @@
          </layout>
         </item>
        </layout>
-      </widget>
-     </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -60,19 +108,22 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>922</width>
-     <height>21</height>
+     <width>1266</width>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>F&amp;ile</string>
     </property>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -91,7 +142,7 @@
   </widget>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -123,6 +174,9 @@
    </property>
   </action>
   <action name="actionFavorite">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Favorite</string>
    </property>

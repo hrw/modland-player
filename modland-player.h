@@ -56,7 +56,7 @@ class ModlandPlayer:public QObject
 
 	void UI_PopulateAuthorsList(QStringList authors);
 	void UI_PopulateSongsList(QStringList songs);
-	void UI_SetSongInfo(QString title);
+	void UI_SetSongInfo(const xmp_module* mi);
 	bool UI_IsItLastSong();
 	QListWidgetItem* UI_NextAuthorName();
 	QString modulePath;

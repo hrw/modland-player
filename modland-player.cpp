@@ -65,10 +65,22 @@ void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
     PopulateSongs(mainUI->AuthorsList->item(0));
 }
 
-void ModlandPlayer::UI_SetSongInfo(QString title)
+void ModlandPlayer::UI_SetSongInfo(const xmp_module* mi)
 {
-    mainUI->TitleLabel->setText(title);
+    mainUI->TitleInfo->setText(mi->name);
+    mainUI->TypeInfo->setText(mi->type);
     mainUI->TimeLabel->setText("00:00");
+
+    QString instruments;
+
+    for(int i = 0; i < mi->ins; i++)
+    {
+            struct xmp_instrument *ins = &mi->xxi[i];
+            instruments += QString::asprintf("%02d: ", i);
+            instruments += ins->name;
+            instruments += "\n";
+    }
+    mainUI->InstrumentsList->setPlainText(instruments);
 }
 
 void ModlandPlayer::JustPlay(QString fileName)
@@ -79,16 +91,14 @@ void ModlandPlayer::JustPlay(QString fileName)
     struct xmp_frame_info fi;
 
     QFileInfo fileinfo(fileName);
-    UI_SetSongInfo("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
     QByteArray ba = fileName.toLocal8Bit();
     xmp_load_module(xmp_ctx, ba.data());
+    /* Show module data */
+
+    xmp_get_module_info(xmp_ctx, &mi);
+    UI_SetSongInfo(mi.mod);
 
     if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
-
-	    /* Show module data */
-
-	    xmp_get_module_info(xmp_ctx, &mi);
-	    printf("%s (%s)\n", mi.mod->name, mi.mod->type);
 
 	    /* Play module */
 
