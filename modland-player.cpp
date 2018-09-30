@@ -22,21 +22,23 @@ ModlandPlayer::ModlandPlayer()
     qDebug() << "ModlandPlayer::ModlandPlayer()";
 
     mainUI = new DesktopUI();
-    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
-    mediaObject = new Phonon::MediaObject(mainUI);
-    metaInformationResolver = new Phonon::MediaObject(mainUI);
     progressDialog = new QProgressDialog(mainUI);
     modulePath = "modules/";
 
-    mediaObject->setTickInterval(1000); // for remaining time display
     progressDialog->setCancelButton(0);	// hide cancel button
-
-    Phonon::createPath(mediaObject, audioOutput);
 
     DoConnects();
     InitializeAuthorsList();
+
+    sound_init(44100, 2);
+
+    xmp_ctx = xmp_create_context();
 }
-ModlandPlayer::~ModlandPlayer() {};
+
+ModlandPlayer::~ModlandPlayer()
+{
+    sound_deinit();
+}
 
 void ModlandPlayer::InitializeAuthorsList()
 {
@@ -73,48 +75,39 @@ void ModlandPlayer::JustPlay(QString fileName)
 {
     qDebug() << "ModlandPlayer::JustPlay()";
 
-    mediaObject->setCurrentSource(fileName);
+    struct xmp_module_info mi;
+    struct xmp_frame_info fi;
+
     QFileInfo fileinfo(fileName);
     UI_SetSongInfo("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
-    mediaObject->play();
-}
+    QByteArray ba = fileName.toLocal8Bit();
+    xmp_load_module(xmp_ctx, ba.data());
 
-void ModlandPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
-{
-    qDebug() << "ModlandPlayer::StateChanged()";
+    if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
 
-    switch (newState)
-    {
-	case Phonon::ErrorState:
-	    if (mediaObject->errorType() == Phonon::FatalError)
-	    {
-//                QMessageBox::warning(mainUI, tr("Fatal Error"), mediaObject->errorString());
+	    /* Show module data */
+
+	    xmp_get_module_info(xmp_ctx, &mi);
+	    printf("%s (%s)\n", mi.mod->name, mi.mod->type);
+
+	    /* Play module */
+
+	    int row = -1;
+	    while (xmp_play_frame(xmp_ctx) == 0) {
+		    xmp_get_frame_info(xmp_ctx, &fi);
+		    if (fi.loop_count > 0)
+			    break;
+
+		    sound_play(fi.buffer, fi.buffer_size);
+
+		    if (fi.row != row) {
+			    row = fi.row;
+		    }
 	    }
-	    else
-	    {
-//                QMessageBox::warning(mainUI, tr("Error"), mediaObject->errorString());
-	    }
-	    break;
-//        case Phonon::PlayingState:
-//            PlayButton->setEnabled(false);
-//            PauseButton->setEnabled(true);
-//            StopButton->setEnabled(true);
-//            break;
-//        case Phonon::StoppedState:
-//            StopButton->setEnabled(false);
-//            PlayButton->setEnabled(true);
-//            PauseButton->setEnabled(false);
-//            break;
-//        case Phonon::PausedState:
-//            PauseButton->setEnabled(false);
-//            StopButton->setEnabled(true);
-//            PlayButton->setEnabled(true);
-//            break;
-	case Phonon::BufferingState:
-	    break;
-	default:
-	    ;
+	    xmp_end_player(xmp_ctx);
     }
+
+    xmp_release_module(xmp_ctx);
 }
 
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
@@ -326,21 +319,10 @@ void ModlandPlayer::DoConnects()
 {
     qDebug() << "ModlandPlayer::DoConnects()";
 
-    mainUI->seekSlider->setMediaObject(mediaObject);
     connect(mainUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(mainUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
-    connect(mainUI->actionPlay,  SIGNAL(triggered()), mediaObject, SLOT(play()));
-    connect(mainUI->actionPause, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
-    connect(mainUI->actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
     connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
-
-    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
-    connect(mediaObject, SIGNAL(totalTimeChanged(qint64)), this, SLOT(UI_TotalTime(qint64)));
-    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
-    connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
-
 }
 
 void ModlandPlayer::show()

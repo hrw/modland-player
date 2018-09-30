@@ -14,9 +14,8 @@
 **
 ****************************************************************************/
 
-
-#include <phonon/mediaobject.h>
-#include <phonon/audiooutput.h>
+#include "alsa.h"
+#include <xmp.h>
 
 #include <QDir>
 #include <QFileDialog>
@@ -48,9 +47,6 @@ class ModlandPlayer:public QObject
     private:
 	DesktopUI *mainUI;
 	QProgressDialog *progressDialog;
-	Phonon::MediaObject *mediaObject;
-	Phonon::MediaObject *metaInformationResolver;
-	Phonon::AudioOutput *audioOutput;
 	QString CurrentAuthor;
 	void InitializeAuthorsList();
 	void FetchSong(QString fileName);
@@ -64,9 +60,9 @@ class ModlandPlayer:public QObject
 	bool UI_IsItLastSong();
 	QListWidgetItem* UI_NextAuthorName();
 	QString modulePath;
+	xmp_context xmp_ctx;
 
     private slots:
-    void StateChanged(Phonon::State newState, Phonon::State oldState);
     void PlaySelected(QListWidgetItem* selectedItem);
     void PopulateSongs(QListWidgetItem* selectedItem);
     void FinishedPlaying();

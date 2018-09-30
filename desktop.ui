@@ -41,9 +41,6 @@
            </widget>
           </item>
           <item>
-           <widget class="Phonon::SeekSlider" name="seekSlider"/>
-          </item>
-          <item>
            <widget class="QLabel" name="TotalTimeLabel">
             <property name="text">
              <string>00:00</string>
@@ -131,13 +128,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>Phonon::SeekSlider</class>
-   <extends>QWidget</extends>
-   <header location="global">phonon/seekslider.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
