@@ -59,6 +59,7 @@ class ModlandPlayer:public QObject
 	void UI_SetSongInfo(const xmp_module* mi);
 	bool UI_IsItLastSong();
 	QListWidgetItem* UI_NextAuthorName();
+	void StopPlayerThread();
 	QString modulePath;
 	xmp_context xmp_ctx;
 	QThread *playerThread;

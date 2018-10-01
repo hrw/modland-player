@@ -35,6 +35,7 @@ ModlandPlayer::ModlandPlayer()
 
 ModlandPlayer::~ModlandPlayer()
 {
+    StopPlayerThread();
     sound_deinit();
 }
 
@@ -94,11 +95,7 @@ void ModlandPlayer::JustPlay(QString fileName)
     xmp_get_module_info(xmp_ctx, &mi);
     UI_SetSongInfo(mi.mod);
 
-    if( playerThread->isRunning() )
-    {
-        playerThread->exit();
-        playerThread->wait();
-    }
+    StopPlayerThread();
 
     playerThread = QThread::create(PlayModule, xmp_ctx, mainUI->playBar);
     playerThread->setObjectName(mi.mod->name);
@@ -133,12 +130,10 @@ void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar)
                             playBar->setValue(fi.pos);
 			    row = fi.row;
 		    }
+
 	    }
-	    xmp_end_player(xmp_ctx);
     }
     qDebug() << "PlayModule() exit";
-
-    // xmp_release_module(xmp_ctx);
 }
 
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
@@ -199,6 +194,16 @@ QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
     else
     {
             return mainUI->AuthorsList->item(0);
+    }
+}
+
+void ModlandPlayer::StopPlayerThread()
+{
+    if( playerThread->isRunning() )
+    {
+        playerThread->requestInterruption();
+        playerThread->wait(200);
+        xmp_end_player(xmp_ctx);
     }
 }
 
