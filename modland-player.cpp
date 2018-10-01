@@ -109,6 +109,7 @@ void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar)
 {
     struct xmp_frame_info fi;
 
+    qDebug() << "PlayModule() start";
     if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
 
 	    /* Play module */
@@ -133,6 +134,7 @@ void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar)
 	    }
 	    xmp_end_player(xmp_ctx);
     }
+    qDebug() << "PlayModule() exit";
 
     // xmp_release_module(xmp_ctx);
 }
@@ -162,15 +164,10 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
     qDebug() << "ModlandPlayer::PopulateSongs()";
 
     CurrentAuthor = selectedItem->text();
-    qDebug() << "SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'";
     QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
 
     query.first();
     query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
-
-    qDebug() << "\t" << "PopulateSongs - switching to author: " << CurrentAuthor;
-
-    qDebug() << "\t" << "SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title";
 
     QStringList songs;
     while (query.next()) {
@@ -229,7 +226,6 @@ void ModlandPlayer::FinishedPlaying()
 	mainUI->SongsList->setCurrentRow(mainUI->SongsList->currentRow() + 1);
     }
 
-    qDebug() << "\t" << "play?";
     PlaySelected(selectedItem);
 }
 
