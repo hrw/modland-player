@@ -4,5 +4,6 @@ Makefile
 moc_*
 ui_*
 .*
+*.pro.user
 modules
 utwory.sqlite
