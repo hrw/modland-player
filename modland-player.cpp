@@ -24,13 +24,13 @@ ModlandPlayer::ModlandPlayer()
     mainUI = new DesktopUI();
     modulePath = "modules/";
 
-    DoConnects();
-    InitializeAuthorsList();
-
     sound_init(44100, 2);
 
     xmp_ctx = xmp_create_context();
-    playerThread = new QThread();
+    playerThread = new PlayThread(xmp_ctx);
+
+    DoConnects();
+    InitializeAuthorsList();
 }
 
 ModlandPlayer::~ModlandPlayer()
@@ -97,43 +97,7 @@ void ModlandPlayer::JustPlay(QString fileName)
 
     StopPlayerThread();
 
-    playerThread = QThread::create(PlayModule, xmp_ctx, mainUI->playBar);
-    playerThread->setObjectName(mi.mod->name);
-    connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
-    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
     playerThread->start();
-}
-
-void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar)
-{
-    struct xmp_frame_info fi;
-
-    qDebug() << "PlayModule() start";
-    if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
-
-	    /* Play module */
-
-	    int row = -1;
-	    while (xmp_play_frame(xmp_ctx) == 0) {
-		    xmp_get_frame_info(xmp_ctx, &fi);
-		    if (fi.loop_count > 0)
-			    break;
-
-                    if ( QThread::currentThread()->isInterruptionRequested() )
-                    {
-                        qDebug() << "PlayModule asked to quit";
-                        break;
-                    }
-		    sound_play(fi.buffer, fi.buffer_size);
-
-		    if (fi.row != row) {
-                            playBar->setValue(fi.pos);
-			    row = fi.row;
-		    }
-
-	    }
-    }
-    qDebug() << "PlayModule() exit";
 }
 
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
@@ -172,6 +136,11 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
     }
 
     UI_PopulateSongsList(songs);
+}
+
+void ModlandPlayer::UI_UpdatePosition(int pos)
+{
+    mainUI->playBar->setValue(pos);
 }
 
 void ModlandPlayer::UI_PopulateSongsList(QStringList songs)
@@ -355,9 +324,52 @@ void ModlandPlayer::DoConnects()
     connect(mainUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
     connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
+
+    connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
+    connect(playerThread, SIGNAL(setPosition(int)), this, SLOT (UI_UpdatePosition(int)));
 }
 
 void ModlandPlayer::show()
 {
     mainUI->show();
 }
+
+
+PlayThread::PlayThread(xmp_context xmp_ctxin)
+{
+    this->xmp_ctx = xmp_ctxin;
+}
+
+void PlayThread::run()
+{
+    struct xmp_frame_info fi;
+
+    qDebug() << "PlayThread::run() start";
+    if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
+
+	    /* Play module */
+
+	    int row = -1;
+	    while (xmp_play_frame(xmp_ctx) == 0) {
+		    xmp_get_frame_info(xmp_ctx, &fi);
+		    if (fi.loop_count > 0)
+			    break;
+
+                    if ( QThread::currentThread()->isInterruptionRequested() )
+                    {
+                        qDebug() << "PlayThread asked to quit";
+                        break;
+                    }
+		    sound_play(fi.buffer, fi.buffer_size);
+
+		    if (fi.row != row) {
+                            emit(setPosition(fi.pos));
+			    row = fi.row;
+		    }
+
+	    }
+    }
+    qDebug() << "PlayThread::run() exit";
+}
+

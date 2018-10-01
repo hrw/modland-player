@@ -34,6 +34,21 @@
 
 #include "desktopui.h"
 
+class PlayThread:public QThread
+{
+    Q_OBJECT
+
+    private:
+    xmp_context xmp_ctx;
+
+    public:
+        PlayThread(xmp_context xmp_ctx);
+        void run();
+
+    signals:
+        void setPosition(int position);
+};
+
 class ModlandPlayer:public QObject
 {
     Q_OBJECT
@@ -72,6 +87,5 @@ class ModlandPlayer:public QObject
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
     void handleError(QNetworkReply::NetworkError code);
     void handleFavorite();
+    void UI_UpdatePosition(int pos);
 };
-void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar);
-
