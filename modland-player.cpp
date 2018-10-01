@@ -24,7 +24,7 @@ ModlandPlayer::ModlandPlayer()
     mainUI = new DesktopUI();
     modulePath = "modules/";
 
-    sound_init(44100, 2);
+    //sound_init(44100, 2);
 
     xmp_ctx = xmp_create_context();
     playerThread = new PlayThread(xmp_ctx);
@@ -36,7 +36,7 @@ ModlandPlayer::ModlandPlayer()
 ModlandPlayer::~ModlandPlayer()
 {
     StopPlayerThread();
-    sound_deinit();
+    //sound_deinit();
 }
 
 void ModlandPlayer::InitializeAuthorsList()
@@ -124,18 +124,23 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 {
     qDebug() << "ModlandPlayer::PopulateSongs()";
 
-    CurrentAuthor = selectedItem->text();
-    QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
+    if (selectedItem != 0)
+    {
+        CurrentAuthor = selectedItem->text();
 
-    query.first();
-    query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
+        qDebug() << CurrentAuthor;
+        QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
 
-    QStringList songs;
-    while (query.next()) {
-	songs << query.value(0).toString().remove(QRegExp(".mod$"));
+        query.first();
+        query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
+
+        QStringList songs;
+        while (query.next()) {
+        songs << query.value(0).toString().remove(QRegExp(".mod$"));
+        }
+
+        UI_PopulateSongsList(songs);
     }
-
-    UI_PopulateSongsList(songs);
 }
 
 void ModlandPlayer::UI_UpdatePosition(int pos)
@@ -326,7 +331,7 @@ void ModlandPlayer::DoConnects()
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
 
     connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
-    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
+//    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
     connect(playerThread, SIGNAL(setPosition(int)), this, SLOT (UI_UpdatePosition(int)));
 }
 
@@ -335,10 +340,39 @@ void ModlandPlayer::show()
     mainUI->show();
 }
 
+PlayThread::~PlayThread()
+{
+    audio->stop();
+    delete audio;
+}
 
 PlayThread::PlayThread(xmp_context xmp_ctxin)
 {
     this->xmp_ctx = xmp_ctxin;
+
+    QAudioFormat format;
+    // Set up the format, eg.
+    format.setSampleRate(48000);
+    format.setChannelCount(2);
+    format.setSampleSize(16);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    if (!info.isFormatSupported(format)) {
+       qWarning() << "Raw audio format not supported by backend, cannot play audio.";
+       return;
+    }
+
+    audio = new QAudioOutput(format, this);
+    audio->setNotifyInterval(1000);
+    connect(audio, SIGNAL(notify()), this, SLOT(audio_out_notify()));
+}
+
+void PlayThread::audio_out_notify()
+{
+    qDebug() << "Audio out notify";
 }
 
 void PlayThread::run()
@@ -346,13 +380,27 @@ void PlayThread::run()
     struct xmp_frame_info fi;
 
     qDebug() << "PlayThread::run() start";
-    if (xmp_start_player(xmp_ctx, 44100, 0) == 0) {
+
+    QIODevice * io = audio->start();
+
+    qDebug() << "audio->start called";
+    qDebug() << "period size: " << audio->periodSize();
+    qDebug() << "buffer size: " << audio->bufferSize();
+    qDebug() << "notify interval: " << audio->notifyInterval();
+
+    if (xmp_start_player(xmp_ctx, 48000, 0) == 0) {
 
 	    /* Play module */
 
 	    int row = -1;
 	    while (xmp_play_frame(xmp_ctx) == 0) {
+
 		    xmp_get_frame_info(xmp_ctx, &fi);
+
+           // qDebug() << "play frame received:";
+           // qDebug() << "buffer=" << (void*)fi.buffer;
+           // qDebug() << "buf_size=" << fi.buffer_size;
+
 		    if (fi.loop_count > 0)
 			    break;
 
@@ -361,7 +409,13 @@ void PlayThread::run()
                         qDebug() << "PlayThread asked to quit";
                         break;
                     }
-		    sound_play(fi.buffer, fi.buffer_size);
+//		    sound_play(fi.buffer, fi.buffer_size);
+            while (audio->bytesFree() <= fi.buffer_size)
+            {
+                QThread::currentThread()->msleep(1);
+            }
+            io->write((const char *)fi.buffer, fi.buffer_size);
+
 
 		    if (fi.row != row) {
                             emit(setPosition(fi.pos));
@@ -370,6 +424,7 @@ void PlayThread::run()
 
 	    }
     }
+    audio->stop();
     qDebug() << "PlayThread::run() exit";
 }
 

@@ -5,11 +5,13 @@
 TEMPLATE = app
 TARGET = modland-player
 DEPENDPATH += .
-INCLUDEPATH += . /usr/include/qt5/QtWidgets
-LIBS += -lasound -lxmp
-QT += network sql widgets
+INCLUDEPATH += . /usr/include/qt5/QtWidgets /usr/local/include
+
+LIBS += -L/usr/local/lib -lxmp
+QT += network sql widgets multimedia
 
 FORMS += desktop.ui
 HEADERS += desktopui.h modland-player.h
-SOURCES += desktopui.cpp modland-player.cpp main.cpp alsa.cc
+SOURCES += desktopui.cpp modland-player.cpp main.cpp
 CONFIG += c++1z
+

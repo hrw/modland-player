@@ -14,7 +14,6 @@
 **
 ****************************************************************************/
 
-#include "alsa.h"
 #include <xmp.h>
 
 #include <QDir>
@@ -31,6 +30,8 @@
 #include <QErrorMessage>
 #include <QDebug>
 #include <QThread>
+#include <QAudioOutput>
+
 
 #include "desktopui.h"
 
@@ -40,9 +41,14 @@ class PlayThread:public QThread
 
     private:
     xmp_context xmp_ctx;
+    QAudioOutput *audio;
+
+public slots:
+    void audio_out_notify();
 
     public:
         PlayThread(xmp_context xmp_ctx);
+        virtual ~PlayThread();
         void run();
 
     signals:
