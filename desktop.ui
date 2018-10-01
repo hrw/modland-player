@@ -23,6 +23,9 @@
       <property name="value">
        <number>0</number>
       </property>
+      <property name="format">
+       <string/>
+      </property>
      </widget>
     </item>
     <item row="0" column="0">
