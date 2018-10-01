@@ -67,7 +67,6 @@ void ModlandPlayer::UI_SetSongInfo(const xmp_module* mi)
 {
     mainUI->TitleInfo->setText(mi->name);
     mainUI->TypeInfo->setText(mi->type);
-    mainUI->TimeLabel->setText("00:00");
 
     QString instruments;
 
@@ -216,20 +215,6 @@ void ModlandPlayer::FinishedPlaying()
 
     qDebug() << "\t" << "play?";
     PlaySelected(selectedItem);
-}
-
-void ModlandPlayer::UI_TotalTime(qint64 time)
-{
-    QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
-
-    mainUI->TotalTimeLabel->setText(displayTime.toString("mm:ss"));
-}
-
-void ModlandPlayer::UI_tick(qint64 time)
-{
-    QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
-
-    mainUI->TimeLabel->setText(displayTime.toString("mm:ss"));
 }
 
 void ModlandPlayer::FetchSong(QString fileName)

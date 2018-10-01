@@ -71,7 +71,5 @@ class ModlandPlayer:public QObject
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
     void handleError(QNetworkReply::NetworkError code);
     void handleFavorite();
-    void UI_tick(qint64 time);
-    void UI_TotalTime(qint64 time);
 };
 void PlayModule(xmp_context xmp_ctx);
