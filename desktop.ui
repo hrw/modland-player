@@ -98,11 +98,19 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
+           <widget class="QLabel" name="label_2">
             <property name="text">
+             <string>Position</string>
             </property>
            </widget>
           </item>
           <item>
+           <widget class="QProgressBar" name="playBar">
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="format">
+             <string>%v/%m</string>
             </property>
            </widget>
           </item>

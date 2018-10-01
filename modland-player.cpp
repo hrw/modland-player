@@ -67,6 +67,7 @@ void ModlandPlayer::UI_SetSongInfo(const xmp_module* mi)
 {
     mainUI->TitleInfo->setText(mi->name);
     mainUI->TypeInfo->setText(mi->type);
+    mainUI->playBar->setMaximum(mi->len);
 
     QString instruments;
 
@@ -99,12 +100,12 @@ void ModlandPlayer::JustPlay(QString fileName)
         playerThread->wait();
     }
 
-    playerThread = QThread::create(PlayModule, xmp_ctx);
+    playerThread = QThread::create(PlayModule, xmp_ctx, mainUI->playBar);
     playerThread->setObjectName(mi.mod->name);
     playerThread->start();
 }
 
-void PlayModule(xmp_context xmp_ctx)
+void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar)
 {
     struct xmp_frame_info fi;
 
@@ -126,6 +127,7 @@ void PlayModule(xmp_context xmp_ctx)
 		    sound_play(fi.buffer, fi.buffer_size);
 
 		    if (fi.row != row) {
+                            playBar->setValue(fi.pos);
 			    row = fi.row;
 		    }
 	    }

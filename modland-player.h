@@ -72,4 +72,5 @@ class ModlandPlayer:public QObject
     void handleError(QNetworkReply::NetworkError code);
     void handleFavorite();
 };
-void PlayModule(xmp_context xmp_ctx);
+void PlayModule(xmp_context xmp_ctx, QProgressBar* playBar);
+
