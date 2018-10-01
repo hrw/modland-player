@@ -193,7 +193,14 @@ bool ModlandPlayer::UI_IsItLastSong()
 
 QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
 {
-    return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
+    if(mainUI->AuthorsList->currentRow() < mainUI->AuthorsList->count() - 1)
+    {
+            return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
+    }
+    else
+    {
+            return mainUI->AuthorsList->item(0);
+    }
 }
 
 void ModlandPlayer::FinishedPlaying()
@@ -206,7 +213,14 @@ void ModlandPlayer::FinishedPlaying()
     {
 	PopulateSongs(UI_NextAuthorName());
 	selectedItem =  mainUI->SongsList->item(0);
-	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
+	if(mainUI->AuthorsList->currentRow() < mainUI->AuthorsList->count())
+        {
+	        mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
+	}
+        else
+        {
+	        mainUI->AuthorsList->setCurrentRow(0);
+        }
 	mainUI->SongsList->setCurrentRow(0);
     }
     else
