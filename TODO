@@ -1,0 +1,9 @@
+PlayModule()
+- przerobić na klasę pochodną od QThread :(
+  - dodać sygnał z pozycją
+  - w ModlandPlayer dodać metodę do aktualizowania pozycji
+  - spiąć je via connect()
+
+To załatwi "QWidget::repaint: Recursive repaint detected" :D
+
+Ogarnąć wątki
