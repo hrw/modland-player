@@ -102,6 +102,8 @@ void ModlandPlayer::JustPlay(QString fileName)
 
     playerThread = QThread::create(PlayModule, xmp_ctx, mainUI->playBar);
     playerThread->setObjectName(mi.mod->name);
+    connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
     playerThread->start();
 }
 
