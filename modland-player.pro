@@ -11,7 +11,9 @@ LIBS += -L/usr/local/lib -lxmp
 QT += network sql widgets multimedia
 
 FORMS += desktop.ui
-HEADERS += desktopui.h modland-player.h
-SOURCES += desktopui.cpp modland-player.cpp main.cpp
+HEADERS += desktopui.h modland-player.h \
+    xmplayer.h
+SOURCES += desktopui.cpp modland-player.cpp main.cpp \
+    xmplayer.cpp
 CONFIG += c++1z
 
