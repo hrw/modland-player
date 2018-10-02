@@ -257,3 +257,42 @@ X-Tracker
 YM
 YMST
 Zoundmonitor
+allmods-sorted.txt:Audio Sculpture
+allmods-sorted.txt:Fasttracker 2
+allmods-sorted.txt:KSS
+allmods-sorted.txt:Nintendo SPC
+allmods-sorted.txt:OctaMED MMD3
+allmods-sorted.txt:PlaySID
+allmods-sorted.txt:Protracker
+allmods-sorted.txt:SNDH
+allmods-sorted.txt:AM Composer
+allmods-sorted.txt:Ad Lib
+allmods-sorted.txt:Composer 669
+allmods-sorted.txt:Farandole Composer
+allmods-sorted.txt:Future Composer 1.3
+allmods-sorted.txt:Future Composer 1.4
+allmods-sorted.txt:Future Composer BSI
+allmods-sorted.txt:Quadra Composer
+allmods-sorted.txt:Sidplayer
+allmods-sorted.txt:Digibooster Pro
+allmods-sorted.txt:Digital Mugician 2
+allmods-sorted.txt:Digital Sonix And Chrome
+allmods-sorted.txt:Digital Sound And Music Interface
+allmods-sorted.txt:Digital Sound Interface Kit RIFF
+allmods-sorted.txt:Digital Sound Studio
+allmods-sorted.txt:Digital Tracker DTM
+allmods-sorted.txt:Digital Tracker MOD
+allmods-sorted.txt:Digital-FM Music
+allmods-sorted.txt:Impulsetracker
+allmods-sorted.txt:Ken's Digital Music
+allmods-sorted.txt:Multitracker
+allmods-sorted.txt:Musicline Editor
+allmods-sorted.txt:OctaMED MMD1
+allmods-sorted.txt:Piston Collage Protected
+allmods-sorted.txt:Playstation 2 Sound Format
+allmods-sorted.txt:Playstation Sound Format
+allmods-sorted.txt:Screamtracker 3
+allmods-sorted.txt:Spectrum
+allmods-sorted.txt:Epic Megagames MASI
+allmods-sorted.txt:Video Game Music
+allmods-sorted.txt:YM

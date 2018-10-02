@@ -1,13 +1,17 @@
 #!/bin/bash
 
-curl ftp://ftp.modland.com/pub/documents/allmods_md5.zip -o allmods_md5.zip
-unzip allmods_md5.zip && rm allmods_md5.zip
-sed -e 's/^[0-9a-f]* //g' allmods_md5.txt | sort > allmods-sorted.txt
+if [ ! -e allmods-sorted.txt ]
+then
+	curl ftp://ftp.modland.com/pub/documents/allmods_md5.zip -o allmods_md5.zip
+	unzip allmods_md5.zip && rm allmods_md5.zip
+	sed -e 's/^[0-9a-f]* //g' allmods_md5.txt | sort > allmods-sorted.txt
+fi
 
 supported_tracker=0
 tracker="none"
 author=
 module=
+TMP=$(mktemp -u)
 
 if [ ! -e utwory.sqlite ]
 then
@@ -20,17 +24,22 @@ fi
 
 # to make things easier just grab whatever is in one of supported formats
 # will cut list a lot
+rm allmods-supported.txt
+
 while read tracker
 do
-	grep $tracker allmods-sorted.txt >>allmods-supported.txt
+	grep "^$tracker" allmods-sorted.txt >>allmods-supported.txt
 done < trackers-supported.txt
+
+#get rid of duplicates
+sort -u allmods-supported.txt > $TMP
+mv $TMP allmods-supported.txt
 
 while read module
 do
 	module_tracker=$(echo "$module" | cut -d'/' -f1)
 	module_author=$( echo "$module" | cut -d'/' -f2)
 
-	TMP=$(mktemp -u)
 
 	if [ "- unknown" == "$module_author" ]
 	then
@@ -81,7 +90,7 @@ do
 	then
 		if [ "$author" != "$module_author" ]
 		then
-			author_id=$(echo "select id from authors where title='$module_author' limit 1"|sqlite3 utwory.sqlite)
+			author_id=$(echo "select id from authors where title='$module_author' limit 1;"|sqlite3 utwory.sqlite)
 
 			if [ ! $author_id ]
 			then
@@ -90,7 +99,7 @@ do
 		fi
 
 		song_id=$(echo 'insert into songs values (null, "'$module'", "'$(basename "$module")'");select last_insert_rowid();'| sqlite3 utwory.sqlite)
-		echo "insert into song_author_map values (null, $author_id, $song_id)" |sqlite3 utwory.sqlite
+		echo "insert into song_author_map values (null, $author_id, $song_id);" |sqlite3 utwory.sqlite
 		echo "added song $song_id"
 	fi
 

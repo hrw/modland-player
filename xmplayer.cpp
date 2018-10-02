@@ -25,14 +25,10 @@ XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_
     // It will be used to push new data from XMP to audio
     m_AudioOutput = new QAudioOutput(m_AudioFormat, this);
     m_AudioOutput->setNotifyInterval(1);
-
-    QThread::currentThread()->setPriority(QThread::HighestPriority);
-
-    m_CurrentFrameInfo.buffer = NULL;
-    m_CurrentFrameInfo.buffer_size = 0;
-
     connect(m_AudioOutput, SIGNAL(notify()), this, SLOT(fetchMoreAudioData()));
     connect(m_AudioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(audioStateChanged(QAudio::State)));
+
+    bzero(&m_CurrentFrameInfo, sizeof(m_CurrentFrameInfo));
 }
 
 XMPlayer::~XMPlayer()
@@ -150,6 +146,11 @@ void XMPlayer::fetchMoreAudioData(void)
             if (xmp_play_frame(xmp_ctx) == 0)
             {
                 xmp_get_frame_info(xmp_ctx, &m_CurrentFrameInfo);
+                if (m_CurrentFrameInfo.loop_count > 0)
+                {
+                    m_LastFrameFetched = true;
+                    m_CurrentFrameInfo.buffer = NULL;
+                }
             }
             else
             {
@@ -165,6 +166,7 @@ void XMPlayer::fetchMoreAudioData(void)
              * the buffer address and size
              */
             int freeSpace = m_AudioOutput->bytesFree();
+
             if (m_CurrentFrameInfo.buffer_size > freeSpace)
             {
                 m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, freeSpace);
@@ -211,51 +213,59 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
     switch (newState)
     {
         case QAudio::IdleState:
-            if (!m_IgnoreIdleState)
+            //if (!m_IgnoreIdleState)
             {
-                m_IgnoreIdleState = false;
-                qDebug() << "idle state";
+                qDebug() << "idle state, buffer underrun?";
+                if (!m_LastFrameFetched)
+                    fetchMoreAudioData();
+                else
+                    emit playFinished();
+                /*
                 m_AudioOutput->stop();
                 m_AudioStream = NULL;
                 emit playStopped();
                 if (m_LastFrameFetched)
                     emit playFinished();
+                */
             }
+            m_IgnoreIdleState = false;
             break;
 
         case QAudio::StoppedState:
             qDebug() << "stopped state";
             if (m_AudioOutput->error() != QAudio::NoError) {
-
+                qDebug() << "audio error: " << m_AudioOutput->error();
             }
+            emit playStopped();
+            if (m_LastFrameFetched)
+                emit playFinished();
             break;
 
         default:
-            // ... other cases as appropriate
+            qDebug() << "other state: " << newState;
             break;
     }
 }
 
-void XMPlayer::start()
+void XMPlayer::playStart()
 {
-    qDebug() << "start";
     if (m_ModuleLoaded)
     {
         m_IgnoreIdleState = true;
-        qDebug() << "module loaded";
+        m_LastFrameFetched = false;
+
         xmp_start_player(xmp_ctx, m_AudioFormat.sampleRate(), 0);
         xmp_set_player(xmp_ctx, XMP_PLAYER_INTERP, XMP_INTERP_SPLINE);
         xmp_set_player(xmp_ctx, XMP_PLAYER_DSP, XMP_DSP_ALL);
         xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, 50);
-        qDebug() << "player started at " << m_AudioFormat.sampleRate();
+
         m_AudioStream = m_AudioOutput->start();
-        qDebug() << "stream started";
-        fetchMoreAudioData();
+
         emit playStarted();
     }
 }
 
-void XMPlayer::stop()
+void XMPlayer::playStop()
 {
     if (m_ModuleLoaded && m_AudioStream)
     {
@@ -263,7 +273,7 @@ void XMPlayer::stop()
     }
 }
 
-void XMPlayer::pause()
+void XMPlayer::playPause()
 {
     if (m_ModuleLoaded && m_AudioStream)
     {
@@ -271,7 +281,7 @@ void XMPlayer::pause()
     }
 }
 
-void XMPlayer::resume()
+void XMPlayer::playResume()
 {
     if (m_ModuleLoaded && m_AudioStream)
     {

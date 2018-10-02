@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QAudioOutput>
+#include <QThread>
 #include <xmp.h>
 
 class XMPlayer : public QObject
@@ -25,16 +26,6 @@ class XMPlayer : public QObject
 public:
     explicit XMPlayer(QObject *parent = nullptr);
     virtual ~XMPlayer();
-
-    bool load(const QString& fileName);
-    bool load(QIODevice *device);
-    bool loadFromData(const char *data, int length);
-    bool loadFromData(const QByteArray &data);
-    void start();
-    void stop();
-    void pause();
-    void resume();
-
 
     bool moduleLoaded() { return m_ModuleLoaded; }
     const QString name() { return m_Name; }
@@ -64,6 +55,14 @@ signals:
     void playResumed();
 
 public slots:
+    bool load(const QString& fileName);
+    bool load(QIODevice *device);
+    bool loadFromData(const char *data, int length);
+    bool loadFromData(const QByteArray &data);
+    void playStart();
+    void playStop();
+    void playPause();
+    void playResume();
 
 private slots:
     void fetchMoreAudioData();
