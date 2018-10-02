@@ -18,9 +18,9 @@ class XMPlayer : public QObject
     Q_PROPERTY(int pattern READ pattern NOTIFY patternChanged)
     Q_PROPERTY(int row READ row NOTIFY rowChanged)
     Q_PROPERTY(int numRows READ numRows NOTIFY numRowsChanged)
-    Q_PROPERTY(int frame READ frame NOTIFY frameChanged)
-    Q_PROPERTY(int speed READ speed NOTIFY speedChanged)
     Q_PROPERTY(int bpm READ bpm NOTIFY bpmChanged)
+
+    Q_PROPERTY(int len READ len NOTIFY lenChanged)
 
 public:
     explicit XMPlayer(QObject *parent = nullptr);
@@ -30,17 +30,21 @@ public:
     bool load(QIODevice *device);
     bool loadFromData(const char *data, int length);
     bool loadFromData(const QByteArray &data);
-    bool moduleLoaded() { return m_ModuleLoaded; }
+    void start();
+    void stop();
+    void pause();
+    void resume();
 
+
+    bool moduleLoaded() { return m_ModuleLoaded; }
     const QString name() { return m_Name; }
     const QString type() { return m_Type; }
     int pos() { return m_Pos; }
     int pattern() { return m_Pattern; }
     int row() { return m_Row; }
     int numRows() { return m_NumRows; }
-    int frame() { return m_Frame; }
-    int speed() { return m_Speed; }
     int bpm() { return m_BPM; }
+    int len() { return m_Len; }
 
 signals:
     void moduleLoadedChanged(bool);
@@ -50,9 +54,14 @@ signals:
     void patternChanged(int);
     void rowChanged(int);
     void numRowsChanged(int);
-    void frameChanged(int);
-    void speedChanged(int);
     void bpmChanged(int);
+    void lenChanged(int);
+
+    void playStarted();
+    void playStopped();
+    void playFinished();
+    void playPaused();
+    void playResumed();
 
 public slots:
 
@@ -71,6 +80,7 @@ private:
     QAudioFormat m_AudioFormat;
     bool m_ModuleLoaded;
     bool m_LastFrameFetched;
+    bool m_IgnoreIdleState;
 
     QString m_Name;
     QString m_Type;
@@ -79,9 +89,9 @@ private:
     int m_Pattern;
     int m_Row;
     int m_NumRows;
-    int m_Frame;
-    int m_Speed;
     int m_BPM;
+
+    int m_Len;
 };
 
 #endif // XMPLAYER_H

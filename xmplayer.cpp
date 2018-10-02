@@ -1,5 +1,5 @@
 #include <QDebug>
-
+#include <QThread>
 #include "xmplayer.h"
 
 XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_LastFrameFetched(false)
@@ -21,8 +21,16 @@ XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_
        m_AudioFormat = info.nearestFormat(m_AudioFormat);
     }
 
+    // Create audio output and tell it to send notify every 1ms.
+    // It will be used to push new data from XMP to audio
     m_AudioOutput = new QAudioOutput(m_AudioFormat, this);
-    m_AudioOutput->setNotifyInterval(1000);
+    m_AudioOutput->setNotifyInterval(1);
+
+    QThread::currentThread()->setPriority(QThread::HighestPriority);
+
+    m_CurrentFrameInfo.buffer = NULL;
+    m_CurrentFrameInfo.buffer_size = 0;
+
     connect(m_AudioOutput, SIGNAL(notify()), this, SLOT(fetchMoreAudioData()));
     connect(m_AudioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(audioStateChanged(QAudio::State)));
 }
@@ -67,6 +75,12 @@ void XMPlayer::getModuleInfo()
             m_Type = type;
             emit typeChanged(m_Type);
         }
+
+        if (m_Len != mi.mod->len)
+        {
+            m_Len = mi.mod->len;
+            emit lenChanged(m_Len);
+        }
     }
 }
 
@@ -78,6 +92,7 @@ bool XMPlayer::load(const QString &fileName)
     {
         m_ModuleLoaded = true;
         emit moduleLoadedChanged(m_ModuleLoaded);
+        getModuleInfo();
     }
 
     return m_ModuleLoaded;
@@ -93,6 +108,7 @@ bool XMPlayer::load(QIODevice *device)
     {
         m_ModuleLoaded = true;
         emit moduleLoadedChanged(m_ModuleLoaded);
+        getModuleInfo();
     }
 
     return m_ModuleLoaded;
@@ -106,6 +122,7 @@ bool XMPlayer::loadFromData(const char *data, int length)
     {
         m_ModuleLoaded = true;
         emit moduleLoadedChanged(m_ModuleLoaded);
+        getModuleInfo();
     }
 
     return m_ModuleLoaded;
@@ -140,13 +157,26 @@ void XMPlayer::fetchMoreAudioData(void)
             }
         }
 
-        /* Does the frame exist and fit into audio buffer? If yes, write it */
+        /* Does the frame exist */
         if (m_CurrentFrameInfo.buffer && m_AudioOutput->bytesFree() >= m_CurrentFrameInfo.buffer_size)
         {
-            m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, m_CurrentFrameInfo.buffer_size);
-
-            m_CurrentFrameInfo.buffer = NULL;
-            m_CurrentFrameInfo.buffer_size = 0;
+            /*
+             * If the buffer fits entirely, write it complete. If not, write part of it and update
+             * the buffer address and size
+             */
+            int freeSpace = m_AudioOutput->bytesFree();
+            if (m_CurrentFrameInfo.buffer_size > freeSpace)
+            {
+                m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, freeSpace);
+                m_CurrentFrameInfo.buffer = static_cast<char *>(m_CurrentFrameInfo.buffer) + freeSpace;
+                m_CurrentFrameInfo.buffer_size -= freeSpace;
+            }
+            else
+            {
+                m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, m_CurrentFrameInfo.buffer_size);
+                m_CurrentFrameInfo.buffer = NULL;
+                m_CurrentFrameInfo.buffer_size = 0;
+            }
 
             if (m_Pos != m_CurrentFrameInfo.pos) {
                 m_Pos = m_CurrentFrameInfo.pos;
@@ -168,16 +198,6 @@ void XMPlayer::fetchMoreAudioData(void)
                 emit numRowsChanged(m_NumRows);
             }
 
-            if (m_Frame != m_CurrentFrameInfo.frame) {
-                m_Frame = m_CurrentFrameInfo.frame;
-                emit frameChanged(m_Frame);
-            }
-
-            if (m_Speed != m_CurrentFrameInfo.speed) {
-                m_Speed = m_CurrentFrameInfo.speed;
-                emit speedChanged(m_Speed);
-            }
-
             if (m_BPM != m_CurrentFrameInfo.bpm) {
                 m_BPM = m_CurrentFrameInfo.bpm;
                 emit bpmChanged(m_BPM);
@@ -188,5 +208,73 @@ void XMPlayer::fetchMoreAudioData(void)
 
 void XMPlayer::audioStateChanged(QAudio::State newState)
 {
-    (void)newState;
+    switch (newState)
+    {
+        case QAudio::IdleState:
+            if (!m_IgnoreIdleState)
+            {
+                m_IgnoreIdleState = false;
+                qDebug() << "idle state";
+                m_AudioOutput->stop();
+                m_AudioStream = NULL;
+                emit playStopped();
+                if (m_LastFrameFetched)
+                    emit playFinished();
+            }
+            break;
+
+        case QAudio::StoppedState:
+            qDebug() << "stopped state";
+            if (m_AudioOutput->error() != QAudio::NoError) {
+
+            }
+            break;
+
+        default:
+            // ... other cases as appropriate
+            break;
+    }
+}
+
+void XMPlayer::start()
+{
+    qDebug() << "start";
+    if (m_ModuleLoaded)
+    {
+        m_IgnoreIdleState = true;
+        qDebug() << "module loaded";
+        xmp_start_player(xmp_ctx, m_AudioFormat.sampleRate(), 0);
+        xmp_set_player(xmp_ctx, XMP_PLAYER_INTERP, XMP_INTERP_SPLINE);
+        xmp_set_player(xmp_ctx, XMP_PLAYER_DSP, XMP_DSP_ALL);
+        xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, 50);
+        qDebug() << "player started at " << m_AudioFormat.sampleRate();
+        m_AudioStream = m_AudioOutput->start();
+        qDebug() << "stream started";
+        fetchMoreAudioData();
+        emit playStarted();
+    }
+}
+
+void XMPlayer::stop()
+{
+    if (m_ModuleLoaded && m_AudioStream)
+    {
+        m_AudioOutput->stop();
+    }
+}
+
+void XMPlayer::pause()
+{
+    if (m_ModuleLoaded && m_AudioStream)
+    {
+        m_AudioOutput->suspend();
+    }
+}
+
+void XMPlayer::resume()
+{
+    if (m_ModuleLoaded && m_AudioStream)
+    {
+        m_AudioOutput->resume();
+    }
 }
