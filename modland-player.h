@@ -71,11 +71,14 @@ class ModlandPlayer:public QObject
 
     private:
     XMPlayer    player;
+    QThread     playerThread;
+
 	DesktopUI *mainUI;
 	QString CurrentAuthor;
 	void InitializeAuthorsList();
 	void FetchSong(QString fileName);
 	void JustPlay(QString fileName);
+    void JustPlay(QByteArray file);
 	QString buildModuleName(QString title, bool localName = true);
 	void DoConnects();
 

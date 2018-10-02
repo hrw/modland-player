@@ -24,6 +24,9 @@ ModlandPlayer::ModlandPlayer()
     mainUI = new DesktopUI();
     modulePath = "modules/";
 
+    player.moveToThread(&playerThread);
+    playerThread.start(QThread::TimeCriticalPriority);
+
     //sound_init(44100, 2);
 
     //xmp_ctx = xmp_create_context();
@@ -35,6 +38,8 @@ ModlandPlayer::ModlandPlayer()
 
 ModlandPlayer::~ModlandPlayer()
 {
+    playerThread.quit();
+    playerThread.wait();
     StopPlayerThread();
     //sound_deinit();
 }
@@ -43,18 +48,18 @@ void ModlandPlayer::InitializeAuthorsList()
 {
     qDebug() << "ModlandPlayer::InitializeAuthorsList()";
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("utwory.sqlite");
-    db.open();
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("utwory.sqlite");
+        db.open();
 
-    QSqlQuery query("SELECT id, title FROM authors ORDER BY title");
-    QStringList authors;
+        QSqlQuery query("SELECT id, title FROM authors ORDER BY title COLLATE NOCASE ASC");
+        QStringList authors;
 
-    while (query.next()) {
-	authors << query.value(1).toString();
-    }
+        while (query.next()) {
+        authors << query.value(1).toString();
+        }
 
-    UI_PopulateAuthorsList(authors);
+        UI_PopulateAuthorsList(authors);
 };
 
 void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
@@ -92,6 +97,7 @@ void ModlandPlayer::JustPlay(QString fileName)
 
     //QByteArray ba = fileName.toLocal8Bit();
     //xmp_load_module(xmp_ctx, ba.data());
+    //QMetaObject::invokeMethod(&player, "load", Qt::ConnectionType::QueuedConnection, Q_ARG(QString, fileName));
     player.load(fileName);
     /* Show module data */
 
@@ -99,10 +105,39 @@ void ModlandPlayer::JustPlay(QString fileName)
     UI_SetSongInfo();
 
     StopPlayerThread();
-    player.start();
+
+    //qDebug() << QThread::currentThread();
+    //QMetaObject::invokeMethod(&player, "playStart", Qt::ConnectionType::QueuedConnection);
+   // playerThread.start();
+    player.playStart();
 //    playerThread->start();
 }
 
+
+
+void ModlandPlayer::JustPlay(QByteArray file)
+{
+    qDebug() << "ModlandPlayer::JustPlay()";
+
+    //struct xmp_module_info mi;
+
+    //QByteArray ba = fileName.toLocal8Bit();
+    //xmp_load_module(xmp_ctx, ba.data());
+    //QMetaObject::invokeMethod(&player, "load", Qt::ConnectionType::QueuedConnection, Q_ARG(QString, fileName));
+    player.loadFromData(file);
+    /* Show module data */
+
+    //xmp_get_module_info(xmp_ctx, &mi);
+    UI_SetSongInfo();
+
+    StopPlayerThread();
+
+    //qDebug() << QThread::currentThread();
+    //QMetaObject::invokeMethod(&player, "playStart", Qt::ConnectionType::QueuedConnection);
+   // playerThread.start();
+    player.playStart();
+//    playerThread->start();
+}
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
 {
     qDebug() << "ModlandPlayer::PlaySelected()";
@@ -127,23 +162,25 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 {
     qDebug() << "ModlandPlayer::PopulateSongs()";
 
-    if (selectedItem != 0)
-    {
         CurrentAuthor = selectedItem->text();
-
-        qDebug() << CurrentAuthor;
         QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
 
         query.first();
-        query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
+        query.exec("SELECT s.filename, s.title FROM songs s, song_author_map m WHERE s.id = m.song_id AND m.author_id = " + query.value(0).toString() + " ORDER BY title COLLATE NOCASE ASC");
 
+        //songsDetails.clear();
         QStringList songs;
+        QStringList details;
         while (query.next()) {
-        songs << query.value(0).toString().remove(QRegExp(".mod$"));
+        songs << query.value(0).toString(); //.section(".", -1000, -2);
+
+        details << query.value(0).toString();
+        details << query.value(1).toString();
+        //songsDetails.append(details);
+        details.clear();
         }
 
         UI_PopulateSongsList(songs);
-    }
 }
 
 void ModlandPlayer::UI_UpdatePosition(int pos)
@@ -177,7 +214,7 @@ QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
 
 void ModlandPlayer::StopPlayerThread()
 {
-    player.stop();
+    player.playStop();
     /*if( playerThread->isRunning() )
     {
         playerThread->requestInterruption();
@@ -222,13 +259,13 @@ void ModlandPlayer::FetchSong(QString fileName)
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
 
-    QString urlSong = "http://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/Protracker/" + fileName ;
+    QString urlSong = "http://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/" + fileName ;
 
     qDebug() << "\t" << "FetchSong - module to fetch: " << urlSong ;
 
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
-    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
     mainUI->progressBar->setFormat("Fetching " + fileName);
     mainUI->progressBar->show();
@@ -281,7 +318,8 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
     }
     else
     {
-	QDir* katalog = new QDir();
+/*
+        QDir* katalog = new QDir();
 	katalog->mkpath(modulePath + CurrentAuthor);
 
 	QFileInfo fileinfo(url.path());
@@ -305,6 +343,8 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 	{
 	    qDebug() << "\t downloadFinished with error: " + file.errorString();
 	}
+    */
+        JustPlay(reply->readAll());
     }
 }
 
@@ -315,7 +355,7 @@ QString ModlandPlayer::buildModuleName(QString title, bool localName)
     if(localName)
 	fullName.append(modulePath);
 
-    fullName += CurrentAuthor + "/" + title + ".mod";
+    fullName += /*CurrentAuthor*/ + "/" + title; // + ".mod";
 
     return fullName;
 }
