@@ -32,9 +32,11 @@
 #include <QThread>
 #include <QAudioOutput>
 
+#include "xmplayer.h"
 
 #include "desktopui.h"
 
+#if 0
 class PlayThread:public QThread
 {
     Q_OBJECT
@@ -54,6 +56,7 @@ public slots:
     signals:
         void setPosition(int position);
 };
+#endif
 
 class ModlandPlayer:public QObject
 {
@@ -67,6 +70,7 @@ class ModlandPlayer:public QObject
     public slots:
 
     private:
+    XMPlayer    player;
 	DesktopUI *mainUI;
 	QString CurrentAuthor;
 	void InitializeAuthorsList();
@@ -77,13 +81,13 @@ class ModlandPlayer:public QObject
 
 	void UI_PopulateAuthorsList(QStringList authors);
 	void UI_PopulateSongsList(QStringList songs);
-	void UI_SetSongInfo(const xmp_module* mi);
+    void UI_SetSongInfo();
 	bool UI_IsItLastSong();
 	QListWidgetItem* UI_NextAuthorName();
 	void StopPlayerThread();
 	QString modulePath;
-	xmp_context xmp_ctx;
-	QThread *playerThread;
+    //xmp_context xmp_ctx;
+    //QThread *playerThread;
 
     private slots:
     void PlaySelected(QListWidgetItem* selectedItem);

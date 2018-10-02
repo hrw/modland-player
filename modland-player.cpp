@@ -26,8 +26,8 @@ ModlandPlayer::ModlandPlayer()
 
     //sound_init(44100, 2);
 
-    xmp_ctx = xmp_create_context();
-    playerThread = new PlayThread(xmp_ctx);
+    //xmp_ctx = xmp_create_context();
+    //playerThread = new PlayThread(xmp_ctx);
 
     DoConnects();
     InitializeAuthorsList();
@@ -64,12 +64,13 @@ void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
     PopulateSongs(mainUI->AuthorsList->item(0));
 }
 
-void ModlandPlayer::UI_SetSongInfo(const xmp_module* mi)
+void ModlandPlayer::UI_SetSongInfo()
 {
-    mainUI->TitleInfo->setText(mi->name);
-    mainUI->TypeInfo->setText(mi->type);
-    mainUI->playBar->setMaximum(mi->len);
-
+    mainUI->TitleInfo->setText(player.name());
+    mainUI->TypeInfo->setText(player.type());
+    mainUI->playBar->setMaximum(player.len());
+    qDebug() << "len is: " << player.len();
+/*
     QString instruments;
 
     for(int i = 0; i < mi->ins; i++)
@@ -80,24 +81,26 @@ void ModlandPlayer::UI_SetSongInfo(const xmp_module* mi)
             instruments += "\n";
     }
     mainUI->InstrumentsList->setPlainText(instruments);
+*/
 }
 
 void ModlandPlayer::JustPlay(QString fileName)
 {
     qDebug() << "ModlandPlayer::JustPlay()";
 
-    struct xmp_module_info mi;
+    //struct xmp_module_info mi;
 
-    QByteArray ba = fileName.toLocal8Bit();
-    xmp_load_module(xmp_ctx, ba.data());
+    //QByteArray ba = fileName.toLocal8Bit();
+    //xmp_load_module(xmp_ctx, ba.data());
+    player.load(fileName);
     /* Show module data */
 
-    xmp_get_module_info(xmp_ctx, &mi);
-    UI_SetSongInfo(mi.mod);
+    //xmp_get_module_info(xmp_ctx, &mi);
+    UI_SetSongInfo();
 
     StopPlayerThread();
-
-    playerThread->start();
+    player.start();
+//    playerThread->start();
 }
 
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
@@ -145,6 +148,7 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 
 void ModlandPlayer::UI_UpdatePosition(int pos)
 {
+    qDebug() << "update position: " << pos;
     mainUI->playBar->setValue(pos);
 }
 
@@ -173,12 +177,13 @@ QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
 
 void ModlandPlayer::StopPlayerThread()
 {
-    if( playerThread->isRunning() )
+    player.stop();
+    /*if( playerThread->isRunning() )
     {
         playerThread->requestInterruption();
         playerThread->wait(200);
         xmp_end_player(xmp_ctx);
-    }
+    }*/
 }
 
 void ModlandPlayer::FinishedPlaying()
@@ -330,9 +335,12 @@ void ModlandPlayer::DoConnects()
     connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
 
-    connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+    connect(&player, SIGNAL(playFinished()), this, SLOT(FinishedPlaying()));
+    connect(&player, SIGNAL(posChanged(int)), this, SLOT(UI_UpdatePosition(int)));
+
+    //connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
 //    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
-    connect(playerThread, SIGNAL(setPosition(int)), this, SLOT (UI_UpdatePosition(int)));
+    //connect(playerThread, SIGNAL(setPosition(int)), this, SLOT (UI_UpdatePosition(int)));
 }
 
 void ModlandPlayer::show()
@@ -340,6 +348,7 @@ void ModlandPlayer::show()
     mainUI->show();
 }
 
+#if 0
 PlayThread::~PlayThread()
 {
     audio->stop();
@@ -427,4 +436,4 @@ void PlayThread::run()
     audio->stop();
     qDebug() << "PlayThread::run() exit";
 }
-
+#endif
