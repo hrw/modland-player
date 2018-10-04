@@ -21,10 +21,18 @@ XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_
        m_AudioFormat = info.nearestFormat(m_AudioFormat);
     }
 
-    // Create audio output and tell it to send notify every 1ms.
-    // It will be used to push new data from XMP to audio
+    // Create audio output and tell it to send notify every 10ms.
+    // Make the audio buffer long enough to fit 100ms of sound there. This gives us
+    // larger latency but avoids much more buffer underruns...
+    //
+    // AudioOutput will be used to push new data from XMP to audio
     m_AudioOutput = new QAudioOutput(m_AudioFormat, this);
-    m_AudioOutput->setNotifyInterval(1);
+    m_AudioOutput->setNotifyInterval(10);
+    m_AudioOutput->setBufferSize(4 * m_AudioFormat.sampleRate() * 100 / 1000);
+
+    qDebug() << "audio bsize: " << m_AudioOutput->bufferSize();
+    qDebug() << "audio psize: " << m_AudioOutput->periodSize();
+
     connect(m_AudioOutput, SIGNAL(notify()), this, SLOT(fetchMoreAudioData()));
     connect(m_AudioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(audioStateChanged(QAudio::State)));
 
@@ -159,7 +167,7 @@ void XMPlayer::fetchMoreAudioData(void)
         }
 
         /* Does the frame exist */
-        if (m_CurrentFrameInfo.buffer && m_AudioOutput->bytesFree() >= m_CurrentFrameInfo.buffer_size)
+        if (m_CurrentFrameInfo.buffer && m_AudioOutput->bytesFree() >= m_AudioOutput->periodSize())
         {
             /*
              * If the buffer fits entirely, write it complete. If not, write part of it and update
@@ -219,14 +227,10 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
                 if (!m_LastFrameFetched)
                     fetchMoreAudioData();
                 else
+                {
+                    xmp_end_player(xmp_ctx);
                     emit playFinished();
-                /*
-                m_AudioOutput->stop();
-                m_AudioStream = NULL;
-                emit playStopped();
-                if (m_LastFrameFetched)
-                    emit playFinished();
-                */
+                }
             }
             m_IgnoreIdleState = false;
             break;
@@ -260,6 +264,10 @@ void XMPlayer::playStart()
         xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, 50);
 
         m_AudioStream = m_AudioOutput->start();
+
+
+        qDebug() << "audio bsize: " << m_AudioOutput->bufferSize();
+        qDebug() << "audio psize: " << m_AudioOutput->periodSize();
 
         emit playStarted();
     }
