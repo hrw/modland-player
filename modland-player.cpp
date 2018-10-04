@@ -138,6 +138,7 @@ void ModlandPlayer::JustPlay(QByteArray file)
     player.playStart();
 //    playerThread->start();
 }
+
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
 {
     qDebug() << "ModlandPlayer::PlaySelected()";

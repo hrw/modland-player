@@ -144,20 +144,28 @@ bool XMPlayer::loadFromData(const QByteArray &data)
  * The current module info (bpm, row, pattern etc) are updated and eventually
  * signals emitted.
  */
+
+static int bufferSize = 0;
+
 void XMPlayer::fetchMoreAudioData(void)
 {
     if (m_ModuleLoaded && m_AudioStream)
     {
-        /* If buffer of frame info is not null, fetch new frame */
-        if (m_CurrentFrameInfo.buffer == NULL)
+        /* If buffer of frame info is null, fetch new frame */
+        if (m_CurrentFrameInfo.buffer == nullptr)
         {
             if (xmp_play_frame(xmp_ctx) == 0)
             {
                 xmp_get_frame_info(xmp_ctx, &m_CurrentFrameInfo);
+                if (m_CurrentFrameInfo.buffer_size != bufferSize)
+                {
+                    bufferSize = m_CurrentFrameInfo.buffer_size;
+                    qDebug() << "new buffer_size: " << bufferSize;
+                }
                 if (m_CurrentFrameInfo.loop_count > 0)
                 {
                     m_LastFrameFetched = true;
-                    m_CurrentFrameInfo.buffer = NULL;
+                    m_CurrentFrameInfo.buffer = nullptr;
                 }
             }
             else
@@ -240,6 +248,7 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
             if (m_AudioOutput->error() != QAudio::NoError) {
                 qDebug() << "audio error: " << m_AudioOutput->error();
             }
+
             emit playStopped();
             if (m_LastFrameFetched)
                 emit playFinished();
