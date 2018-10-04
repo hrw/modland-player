@@ -346,6 +346,7 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 	}
     */
         JustPlay(reply->readAll());
+        reply->close();
     }
 }
 
