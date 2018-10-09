@@ -229,7 +229,7 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
     switch (newState)
     {
         case QAudio::IdleState:
-            //if (!m_IgnoreIdleState)
+            if (!m_IgnoreIdleState)
             {
                 qDebug() << "idle state, buffer underrun?";
                 if (!m_LastFrameFetched)
@@ -273,7 +273,7 @@ void XMPlayer::playStart()
         xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, 50);
 
         m_AudioStream = m_AudioOutput->start();
-
+        fetchMoreAudioData();
 
         qDebug() << "audio bsize: " << m_AudioOutput->bufferSize();
         qDebug() << "audio psize: " << m_AudioOutput->periodSize();

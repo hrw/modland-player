@@ -34,7 +34,7 @@
 
 #include "xmplayer.h"
 
-#include "desktopui.h"
+//#include "desktopui.h"
 
 #if 0
 class PlayThread:public QThread

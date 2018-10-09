@@ -72,6 +72,8 @@ private:
     void releaseModule();
     void getModuleInfo();
 
+    QMutex m_AudioLock;
+
     xmp_context xmp_ctx;
     struct xmp_frame_info m_CurrentFrameInfo;
     QAudioOutput *m_AudioOutput;
