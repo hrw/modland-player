@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QThread>
+#include <math.h>
 #include "xmplayer.h"
 
 XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_LastFrameFetched(false)
@@ -29,9 +30,6 @@ XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_
     m_AudioOutput = new QAudioOutput(m_AudioFormat, this);
     m_AudioOutput->setNotifyInterval(10);
     m_AudioOutput->setBufferSize(4 * m_AudioFormat.sampleRate() * 100 / 1000);
-
-    qDebug() << "audio bsize: " << m_AudioOutput->bufferSize();
-    qDebug() << "audio psize: " << m_AudioOutput->periodSize();
 
     connect(m_AudioOutput, SIGNAL(notify()), this, SLOT(fetchMoreAudioData()));
     connect(m_AudioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(audioStateChanged(QAudio::State)));
@@ -147,6 +145,44 @@ bool XMPlayer::loadFromData(const QByteArray &data)
 
 static int bufferSize = 0;
 
+void XMPlayer::setMix(int mix)
+{
+    if (mix >= 0 && mix <= 100)
+    {
+        if (m_Mix != mix)
+        {
+            xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, mix);
+            m_Mix = mix;
+            emit mixChanged(mix);
+        }
+    }
+}
+
+void XMPlayer::setVolume(int vol)
+{
+    if (vol >= 0 && vol <= 100)
+    {
+        if (m_Volume != vol)
+        {
+            xmp_set_player(xmp_ctx, XMP_PLAYER_VOLUME, vol);
+            m_Volume = vol;
+            emit volumeChanged(vol);
+        }
+    }
+}
+
+int XMPlayer::mix()
+{
+    m_Mix = xmp_get_player(xmp_ctx, XMP_PLAYER_MIX);
+    return m_Mix;
+}
+
+int XMPlayer::volume()
+{
+    m_Volume = xmp_get_player(xmp_ctx, XMP_PLAYER_VOLUME);
+    return m_Volume;
+}
+
 void XMPlayer::fetchMoreAudioData(void)
 {
     if (m_ModuleLoaded && m_AudioStream)
@@ -183,6 +219,43 @@ void XMPlayer::fetchMoreAudioData(void)
              */
             int freeSpace = m_AudioOutput->bytesFree();
 
+            double vl = 0, vr = 0;
+            int16_t *vdata = (int16_t *)m_CurrentFrameInfo.buffer;
+
+            for (int i=0; i < m_CurrentFrameInfo.buffer_size / 4; i++)
+            {
+                double l = double(vdata[2*i]) / 32768.0;
+                double r = double(vdata[2*i+1]) / 32768.0;
+
+                l = 10.0 * log10(l*l);
+                r = 10.0 * log10(r*r);
+
+                if (l < -30)
+                    l = -30;
+                if (r < -30)
+                    r = -30;
+
+                vl += l;
+                vr += r;
+
+            }
+
+            vl /= m_CurrentFrameInfo.buffer_size / 4;
+            vr /= m_CurrentFrameInfo.buffer_size / 4;
+
+            vl = (vl + 30)/30;
+            vr = (vr + 30)/30;
+
+            if (vl  != m_VULeft) {
+                m_VULeft = vl;
+                emit vuLeftChanged(vl);
+            }
+
+            if (vr  != m_VURight) {
+                m_VURight = vr;
+                emit vuRightChanged(vr);
+            }
+
             if (m_CurrentFrameInfo.buffer_size > freeSpace)
             {
                 m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, freeSpace);
@@ -194,6 +267,16 @@ void XMPlayer::fetchMoreAudioData(void)
                 m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, m_CurrentFrameInfo.buffer_size);
                 m_CurrentFrameInfo.buffer = NULL;
                 m_CurrentFrameInfo.buffer_size = 0;
+            }
+
+            if (m_Time != m_CurrentFrameInfo.time) {
+                m_Time = m_CurrentFrameInfo.time;
+                emit timeChanged(m_Time);
+            }
+
+            if (m_TotalTime != m_CurrentFrameInfo.total_time) {
+                m_TotalTime = m_CurrentFrameInfo.total_time;
+                emit totalTimeChanged(m_Time);
             }
 
             if (m_Pos != m_CurrentFrameInfo.pos) {
@@ -237,6 +320,10 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
                 else
                 {
                     xmp_end_player(xmp_ctx);
+                    m_VULeft = 0;
+                    m_VURight = 0;
+                    emit vuLeftChanged(0);
+                    emit vuRightChanged(0);
                     emit playFinished();
                 }
             }
@@ -248,7 +335,10 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
             if (m_AudioOutput->error() != QAudio::NoError) {
                 qDebug() << "audio error: " << m_AudioOutput->error();
             }
-
+            m_VULeft = 0;
+            m_VURight = 0;
+            emit vuLeftChanged(0);
+            emit vuRightChanged(0);
             emit playStopped();
             if (m_LastFrameFetched)
                 emit playFinished();
@@ -270,13 +360,11 @@ void XMPlayer::playStart()
         xmp_start_player(xmp_ctx, m_AudioFormat.sampleRate(), 0);
         xmp_set_player(xmp_ctx, XMP_PLAYER_INTERP, XMP_INTERP_SPLINE);
         xmp_set_player(xmp_ctx, XMP_PLAYER_DSP, XMP_DSP_ALL);
-        xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, 50);
+        setMix(50);
+        setVolume(100);
 
         m_AudioStream = m_AudioOutput->start();
         fetchMoreAudioData();
-
-        qDebug() << "audio bsize: " << m_AudioOutput->bufferSize();
-        qDebug() << "audio psize: " << m_AudioOutput->periodSize();
 
         emit playStarted();
     }

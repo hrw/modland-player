@@ -17,6 +17,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 
 #include "xmplayer.h"
 
@@ -24,29 +25,18 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-    XMPlayer player;
-//    QThread playerThread;
     int retval;
 
-//    player.moveToThread(&playerThread);
-//    playerThread.start(QThread::HighestPriority);
+    QQuickStyle::setStyle("Material");
 
     qmlRegisterType<XMPlayer>("XMPlayer", 1, 0, "XMPlayer");
 
     app.setApplicationName("Modland Player");
 
-    engine.rootContext()->setContextProperty("player", &player);
-
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
 
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    retval = app.exec();
-
-//    playerThread.terminate();
-//    playerThread.wait();
-
-    return retval;
+    return app.exec();
 }

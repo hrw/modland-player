@@ -20,6 +20,13 @@ class XMPlayer : public QObject
     Q_PROPERTY(int row READ row NOTIFY rowChanged)
     Q_PROPERTY(int numRows READ numRows NOTIFY numRowsChanged)
     Q_PROPERTY(int bpm READ bpm NOTIFY bpmChanged)
+    Q_PROPERTY(double vuLeft READ vuLeft NOTIFY vuLeftChanged)
+    Q_PROPERTY(double vuRight READ vuRight NOTIFY vuRightChanged)
+    Q_PROPERTY(int time READ time NOTIFY timeChanged)
+    Q_PROPERTY(int totalTime READ totalTime NOTIFY totalTimeChanged)
+
+    Q_PROPERTY(int mix READ mix WRITE setMix NOTIFY mixChanged)
+    Q_PROPERTY(int volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
     Q_PROPERTY(int len READ len NOTIFY lenChanged)
 
@@ -36,6 +43,14 @@ public:
     int numRows() { return m_NumRows; }
     int bpm() { return m_BPM; }
     int len() { return m_Len; }
+    int mix();
+    int volume();
+    void setMix(int);
+    void setVolume(int);
+    int time() { return m_Time; }
+    int totalTime() { return m_TotalTime; }
+    double vuLeft() { return m_VULeft; }
+    double vuRight() { return m_VURight; }
 
 signals:
     void moduleLoadedChanged(bool);
@@ -47,6 +62,12 @@ signals:
     void numRowsChanged(int);
     void bpmChanged(int);
     void lenChanged(int);
+    void vuLeftChanged(double);
+    void vuRightChanged(double);
+    void timeChanged(int);
+    void totalTimeChanged(int);
+    void mixChanged(int);
+    void volumeChanged(int);
 
     void playStarted();
     void playStopped();
@@ -86,13 +107,19 @@ private:
     QString m_Name;
     QString m_Type;
 
+    double m_VULeft;
+    double m_VURight;
+
+    int m_Time;
+    int m_TotalTime;
     int m_Pos;
     int m_Pattern;
     int m_Row;
     int m_NumRows;
     int m_BPM;
-
     int m_Len;
+    int m_Mix;
+    int m_Volume;
 };
 
 #endif // XMPLAYER_H
