@@ -3,9 +3,8 @@
         <file>main.qml</file>
         <file>Player.qml</file>
         <file>PlayerForm.ui.qml</file>
-    </qresource>
-    <qresource prefix="/img">
-        <file>bargraph_transp_20.png</file>
-        <file>bargraph_transp_off_20.png</file>
+        <file>img/bargraph_transp_20.png</file>
+        <file>img/bargraph_transp_off_20.png</file>
+        <file>fonts/Prototype.ttf</file>
     </qresource>
 </RCC>
