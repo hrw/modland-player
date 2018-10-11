@@ -18,6 +18,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <QDir>
+#include <QFontDatabase>
 
 #include "xmplayer.h"
 
@@ -26,7 +28,13 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-    int retval;
+
+    QDir dir(":/fonts/");
+    dir.setNameFilters(QStringList() << "*.otf" << "*.ttf");
+    for (auto file: dir.entryList(QDir::Files))
+    {
+        QFontDatabase::addApplicationFont(":/fonts/" + file);
+    }
 
     QQuickStyle::setStyle("Material");
 
