@@ -43,8 +43,15 @@ PlayerForm {
             progressBar.value = player.time / player.totalTime
         }
         onNameChanged: {
-            label.text = player.name
+            labelTitle.text = player.name
         }
+        onBpmChanged: {
+            labelBPM.text = "BPM: " + player.bpm
+        }
+        onPosChanged: {
+            labelPos.text = "Pos: " + player.pos + "/" + player.len
+        }
+
         onMixChanged: {
             slider1.value = player.mix / 100;
         }
