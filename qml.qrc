@@ -6,5 +6,9 @@
         <file>img/bargraph_transp_20.png</file>
         <file>img/bargraph_transp_off_20.png</file>
         <file>fonts/Prototype.ttf</file>
+        <file>Instruments.qml</file>
+        <file>InstrumentsForm.ui.qml</file>
+        <file>Playlist.qml</file>
+        <file>PlaylistForm.ui.qml</file>
     </qresource>
 </RCC>
