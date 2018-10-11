@@ -13,6 +13,7 @@ QT += network sql widgets multimedia quick quickcontrols2
 HEADERS += xmplayer.h
 SOURCES += main.cpp xmplayer.cpp
 CONFIG += c++1z
+#qtquickcompiler
 
 DISTFILES +=
 

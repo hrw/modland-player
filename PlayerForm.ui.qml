@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Extras 1.4
 
 Item {
-    width: 210
+    width: 250
     height: 400
     property alias slider1: slider1
     property alias slider: slider
@@ -75,18 +75,18 @@ Item {
 
     Button {
         id: button
-        x: 10
+        x: 54
         y: 162
-        width: 60
+        width: 40
         height: 40
         text: qsTr("▶️")
     }
 
     Button {
         id: button1
-        x: 142
+        x: 146
         y: 162
-        width: 60
+        width: 40
         height: 40
         text: qsTr("■")
     }
@@ -98,7 +98,7 @@ Item {
         width: 191
         height: 49
         text: qsTr("Text")
-        font.family: "Verdana"
+        font.family: "Prototype"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
         font.pixelSize: 50
@@ -111,6 +111,7 @@ Item {
         width: 189
         height: 16
         text: qsTr("Label")
+        font.family: "Prototype"
     }
 
     Slider {
@@ -132,5 +133,33 @@ Item {
         height: 184
         orientation: Qt.Vertical
         value: 0.5
+    }
+
+    Button {
+        id: button2
+        x: 100
+        y: 162
+        width: 40
+        height: 40
+        text: qsTr("Ⅱ")
+    }
+
+    Button {
+        id: button3
+        x: 8
+        y: 162
+        width: 40
+        height: 40
+        text: qsTr("⏪")
+        display: AbstractButton.TextOnly
+    }
+
+    Button {
+        id: button4
+        x: 192
+        y: 162
+        width: 40
+        height: 40
+        text: qsTr("⏭")
     }
 }

@@ -14,11 +14,11 @@ PlayerForm {
             signalRight.width = 2 + 6*Math.round(31 * vr)
 
             if (vl > 0.02)
-                vl = vl * 0.95
+                vl = vl * 0.92
             else vl = 0
 
             if (vr > 0.02)
-                vr = vr * 0.95
+                vr = vr * 0.92
             else vr = 0
 
         }

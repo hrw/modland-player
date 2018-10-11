@@ -227,6 +227,7 @@ void XMPlayer::fetchMoreAudioData(void)
                 double l = double(vdata[2*i]) / 32768.0;
                 double r = double(vdata[2*i+1]) / 32768.0;
 
+/*
                 l = 10.0 * log10(l*l);
                 r = 10.0 * log10(r*r);
 
@@ -234,14 +235,22 @@ void XMPlayer::fetchMoreAudioData(void)
                     l = -30;
                 if (r < -30)
                     r = -30;
-
-                vl += l;
-                vr += r;
+*/
+                vl += l*l;
+                vr += r*r;
 
             }
 
             vl /= m_CurrentFrameInfo.buffer_size / 4;
             vr /= m_CurrentFrameInfo.buffer_size / 4;
+
+            vl = 10.0*log10(vl);
+            vr = 10.0*log10(vr);
+
+            if (vl < -30)
+                vl = -30;
+            if (vr < -30)
+                vr = -30;
 
             vl = (vl + 30)/30;
             vr = (vr + 30)/30;
