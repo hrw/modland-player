@@ -33,7 +33,6 @@ Item {
             color: "lightsteelblue"
             radius: 5
         }
-        focus: true
         delegate: Item {
             x: 5
             width: 80
