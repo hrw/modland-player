@@ -30,6 +30,8 @@ class XMPlayer : public QObject
 
     Q_PROPERTY(int len READ len NOTIFY lenChanged)
 
+    Q_PROPERTY(QStringList instruments READ instruments NOTIFY instrumentsChanged)
+
 public:
     explicit XMPlayer(QObject *parent = nullptr);
     virtual ~XMPlayer();
@@ -51,6 +53,7 @@ public:
     int totalTime() { return m_TotalTime; }
     double vuLeft() { return m_VULeft; }
     double vuRight() { return m_VURight; }
+    QStringList instruments() { return m_Instruments; }
 
 signals:
     void moduleLoadedChanged(bool);
@@ -68,6 +71,8 @@ signals:
     void totalTimeChanged(int);
     void mixChanged(int);
     void volumeChanged(int);
+
+    void instrumentsChanged();
 
     void playStarted();
     void playStopped();
@@ -120,6 +125,7 @@ private:
     int m_Len;
     int m_Mix;
     int m_Volume;
+    QStringList m_Instruments;
 };
 
 #endif // XMPLAYER_H

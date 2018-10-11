@@ -83,6 +83,19 @@ void XMPlayer::getModuleInfo()
             m_Len = mi.mod->len;
             emit lenChanged(m_Len);
         }
+
+        m_Instruments.clear();
+
+        for (int i=0; i < mi.mod->ins; i++)
+        {
+            struct xmp_instrument *ins = &mi.mod->xxi[i];
+            QString n(ins->name);
+            if (n == "")
+                n = " ";
+            m_Instruments.append(n);
+        }
+
+        emit instrumentsChanged();
     }
 }
 
