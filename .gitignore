@@ -1,3 +1,4 @@
+tools/allmods*
 modland-player
 *.o
 Makefile
