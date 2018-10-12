@@ -1,0 +1,298 @@
+Ace Tracker
+Actionamics
+Activision Pro
+Ad Lib
+Aero Studio
+AHX
+All Sound Tracker
+AM Composer
+AND XSynth
+Anders Oland
+AProSys
+ArkosTracker
+Arpeggiator
+Art And Magic
+Art Of Noise
+Atari Digi-Mix
+Athtune
+AXS
+AY Amadeus
+AY Emul
+AY STRC
+Beathoven Synthesizer
+Beaver Sweeper
+Beepola
+Ben Daglish
+Ben Daglish SID
+BeRoTracker
+BoyScout
+BP SoundMon 2
+BP SoundMon 3
+Buzz
+Buzzic
+Buzzic 2
+Capcom Q-Sound Format
+CBA
+Compoz
+Core Design
+Cubic Tiny XM
+CustomMade
+Cybertracker
+Cybertracker C64
+Darius Zendeh
+DarkWave Studio
+Dave Lowe
+Dave Lowe New
+David Hanney
+David Whittaker
+Delitracker Custom
+Delta Music
+Delta Music 2
+Delta Packer
+Desire
+Digital Mugician
+Digital Mugician 2
+Digital Sonix And Chrome
+Digital Sound Interface Kit
+Digital Sound Interface Kit RIFF
+Digital Sound Studio
+Digital-FM Music
+Digitrekker
+Dirk Bialluch
+Disorder Tracker 2
+Dreamcast Sound Format
+DreamStation
+Dynamic Studio Professional
+Dynamic Synthesizer
+EarAche
+Electronic Music System
+Electronic Music System v6
+Extreme Tracker
+Face The Music
+FamiTracker
+Fashion Tracker
+Follin Player II
+Forgotten Worlds
+Fred Gray
+FredMon
+Future Composer 1.3
+Future Composer 1.4
+Future Composer BSI
+Future Player
+Gameboy Sound Format
+Gameboy Sound System
+Gameboy Sound System GBR
+Gameboy Tracker
+GlueMon
+GoatTracker
+GoatTracker 2
+Graoumf Tracker
+Graoumf Tracker 2
+GT Game Systems
+HES
+Hippel
+Hippel 7V
+Hippel COSO
+Hippel ST
+Hippel ST COSO
+HivelyTracker
+Howie Davies
+Infogrames
+InStereo!
+InStereo! 2.0
+Ixalance
+JamCracker
+Janko Mrsic-Flogel
+Jason Brooke
+Jason Page
+Jason Page Old
+JayTrax
+Jeroen Tel
+Jesper Olsen
+Ken's Digital Music
+Klystrack
+Kris Hatlelid
+KSS
+Leggless Music Editor
+Lionheart
+Mad Tracker 2
+Maniacs Of Noise
+Mark Cooksey
+Mark Cooksey Old
+Mark II
+MaxTrax
+MCMD
+MDX
+Medley
+Megadrive CYM
+Megadrive GYM
+MegaStation
+MegaStation MIDI
+Mike Davies
+MikMod UNITRK
+Monotone
+MultiMedia Sound
+Music Assembler
+Musicline Editor
+MusicMaker V8
+MusicMaker V8 Old
+MVS Tracker
+MVX Module
+NerdTracker 2
+Nintendo DS Sound Format
+Nintendo Sound Format
+Nintendo SPC
+NoiseTrekker
+NoiseTrekker 2
+OctaMED MMDC
+Onyx Music File
+Organya
+Organya 2
+Paul Robotham
+Paul Shields
+Paul Summers
+Peter Verswyvelen
+Picatune
+Picatune2
+Pierre Adane Packer
+Piston Collage
+Piston Collage Protected
+PlayerPro
+PlaySID
+Playstation 2 Sound Format
+Playstation Sound Format
+PMD
+PokeyNoise
+Pollytracker
+Powertracker
+Professional Sound Artists
+ProTrekkr
+ProTrekkr 2.0
+Psycle
+Pumatracker
+Quartet PSG
+Quartet ST
+RamTracker
+RealSID
+Renoise
+Renoise Old
+Richard Joseph
+Riff Raff
+Rob Hubbard
+Rob Hubbard ST
+Ron Klaren
+S98
+Sam Coupe COP
+Sam Coupe SNG
+Saturn Sound Format
+SBStudio
+SC68
+SCUMM
+Sean Connolly
+Sean Conran
+Shroom
+SidMon 1
+SidMon 2
+Sidplayer
+Silmarils
+Skale Tracker
+Slight Atari Player
+SNDH
+Sonic Arranger
+Sound Club
+Sound Club 2
+Sound Images
+Sound Master
+Sound Master II v1
+Sound Master II v3
+Sound Programming Language
+SoundControl
+SoundFactory
+SoundPlayer
+Soundtracker Pro II
+Special FX
+Special FX ST
+Spectrum
+Speedy A1 System
+Speedy System
+SPU
+Starkos
+Stereo Sidplayer
+Steve Barrett
+Stonetracker
+SunTronic
+SunVox
+Super Nintendo Sound Format
+SVAr Tracker
+Symphonie
+Synder SNG-Player
+Synder SNG-Player Stereo
+Synder Tracker
+Synth Dream
+Synth Pack
+Synthesis
+SynTracker
+TCB Tracker
+TFM Music Maker
+TFMX
+TFMX ST
+The 0ok Amazing Synth Tracker
+The Musical Enlightenment
+Thomas Hermann
+Tomy Tracker
+TSS
+Tunefish
+Ultra64 Sound Format
+Unique Development
+V2
+Velvet Studio
+VGM Music Maker
+Vic-Tracker
+Video Game Music
+Voodoo Supreme Synthesizer
+Wally Beben
+Westwood SND
+WonderSwan
+X-Tracker
+YM
+YMST
+Zoundmonitor
+allmods-sorted.txt:Audio Sculpture
+allmods-sorted.txt:Fasttracker 2
+allmods-sorted.txt:KSS
+allmods-sorted.txt:Nintendo SPC
+allmods-sorted.txt:OctaMED MMD3
+allmods-sorted.txt:PlaySID
+allmods-sorted.txt:Protracker
+allmods-sorted.txt:SNDH
+allmods-sorted.txt:AM Composer
+allmods-sorted.txt:Ad Lib
+allmods-sorted.txt:Composer 669
+allmods-sorted.txt:Farandole Composer
+allmods-sorted.txt:Future Composer 1.3
+allmods-sorted.txt:Future Composer 1.4
+allmods-sorted.txt:Future Composer BSI
+allmods-sorted.txt:Quadra Composer
+allmods-sorted.txt:Sidplayer
+allmods-sorted.txt:Digibooster Pro
+allmods-sorted.txt:Digital Mugician 2
+allmods-sorted.txt:Digital Sonix And Chrome
+allmods-sorted.txt:Digital Sound And Music Interface
+allmods-sorted.txt:Digital Sound Interface Kit RIFF
+allmods-sorted.txt:Digital Sound Studio
+allmods-sorted.txt:Digital Tracker DTM
+allmods-sorted.txt:Digital Tracker MOD
+allmods-sorted.txt:Digital-FM Music
+allmods-sorted.txt:Impulsetracker
+allmods-sorted.txt:Ken's Digital Music
+allmods-sorted.txt:Multitracker
+allmods-sorted.txt:Musicline Editor
+allmods-sorted.txt:OctaMED MMD1
+allmods-sorted.txt:Piston Collage Protected
+allmods-sorted.txt:Playstation 2 Sound Format
+allmods-sorted.txt:Playstation Sound Format
+allmods-sorted.txt:Screamtracker 3
+allmods-sorted.txt:Spectrum
+allmods-sorted.txt:Epic Megagames MASI
+allmods-sorted.txt:Video Game Music
+allmods-sorted.txt:YM

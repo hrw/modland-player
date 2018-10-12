@@ -14,17 +14,43 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QQuickStyle>
+#include <QDir>
+#include <QFontDatabase>
+#include <QNetworkAccessManager>
 
-#include "modland-player.h"
+#include "xmplayer.h"
+#include "modland.h"
+
+QNetworkAccessManager manager;
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication app(argc, argv);
+    QQmlApplicationEngine engine;
+
+    QDir dir(":/fonts/");
+    dir.setNameFilters(QStringList() << "*.otf" << "*.ttf");
+    for (auto file: dir.entryList(QDir::Files))
+    {
+        QFontDatabase::addApplicationFont(":/fonts/" + file);
+    }
+
+    QQuickStyle::setStyle("Material");
+
+    qmlRegisterType<XMPlayer>("XMPlayer", 1, 0, "XMPlayer");
+    qmlRegisterType<Modland>("XMPlayer", 1, 0, "Modland");
 
     app.setApplicationName("Modland Player");
-    ModlandPlayer player;
 
-    player.show();
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+    if (engine.rootObjects().isEmpty())
+        return -1;
+
     return app.exec();
 }

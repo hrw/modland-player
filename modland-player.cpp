@@ -22,38 +22,44 @@ ModlandPlayer::ModlandPlayer()
     qDebug() << "ModlandPlayer::ModlandPlayer()";
 
     mainUI = new DesktopUI();
-    audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, mainUI);
-    mediaObject = new Phonon::MediaObject(mainUI);
-    metaInformationResolver = new Phonon::MediaObject(mainUI);
-    progressDialog = new QProgressDialog(mainUI);
     modulePath = "modules/";
 
-    mediaObject->setTickInterval(1000); // for remaining time display
-    progressDialog->setCancelButton(0);	// hide cancel button
+    player.moveToThread(&playerThread);
+    playerThread.start(QThread::TimeCriticalPriority);
 
-    Phonon::createPath(mediaObject, audioOutput);
+    //sound_init(44100, 2);
+
+    //xmp_ctx = xmp_create_context();
+    //playerThread = new PlayThread(xmp_ctx);
 
     DoConnects();
     InitializeAuthorsList();
 }
-ModlandPlayer::~ModlandPlayer() {};
+
+ModlandPlayer::~ModlandPlayer()
+{
+    playerThread.quit();
+    playerThread.wait();
+    StopPlayerThread();
+    //sound_deinit();
+}
 
 void ModlandPlayer::InitializeAuthorsList()
 {
     qDebug() << "ModlandPlayer::InitializeAuthorsList()";
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("utwory.sqlite");
-    db.open();
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("utwory.sqlite");
+        db.open();
 
-    QSqlQuery query("SELECT id, title FROM authors ORDER BY title");
-    QStringList authors;
+        QSqlQuery query("SELECT id, title FROM authors ORDER BY title COLLATE NOCASE ASC");
+        QStringList authors;
 
-    while (query.next()) {
-	authors << query.value(1).toString();
-    }
+        while (query.next()) {
+        authors << query.value(1).toString();
+        }
 
-    UI_PopulateAuthorsList(authors);
+        UI_PopulateAuthorsList(authors);
 };
 
 void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
@@ -63,58 +69,74 @@ void ModlandPlayer::UI_PopulateAuthorsList(QStringList authors)
     PopulateSongs(mainUI->AuthorsList->item(0));
 }
 
-void ModlandPlayer::UI_SetSongInfo(QString title)
+void ModlandPlayer::UI_SetSongInfo()
 {
-    mainUI->TitleLabel->setText(title);
-    mainUI->TimeLabel->setText("00:00");
+    mainUI->TitleInfo->setText(player.name());
+    mainUI->TypeInfo->setText(player.type());
+    mainUI->playBar->setMaximum(player.len());
+    qDebug() << "len is: " << player.len();
+/*
+    QString instruments;
+
+    for(int i = 0; i < mi->ins; i++)
+    {
+            struct xmp_instrument *ins = &mi->xxi[i];
+            instruments += QString::asprintf("%02d: ", i);
+            instruments += ins->name;
+            instruments += "\n";
+    }
+    mainUI->InstrumentsList->setPlainText(instruments);
+*/
 }
 
 void ModlandPlayer::JustPlay(QString fileName)
 {
     qDebug() << "ModlandPlayer::JustPlay()";
 
-    mediaObject->setCurrentSource(fileName);
-    QFileInfo fileinfo(fileName);
-    UI_SetSongInfo("Playing \"" + fileinfo.baseName() + "\" by " + CurrentAuthor);
-    mediaObject->play();
+    //struct xmp_module_info mi;
+
+    //QByteArray ba = fileName.toLocal8Bit();
+    //xmp_load_module(xmp_ctx, ba.data());
+    //QMetaObject::invokeMethod(&player, "load", Qt::ConnectionType::QueuedConnection, Q_ARG(QString, fileName));
+    player.load(fileName);
+    /* Show module data */
+
+    //xmp_get_module_info(xmp_ctx, &mi);
+    UI_SetSongInfo();
+
+    StopPlayerThread();
+
+    //qDebug() << QThread::currentThread();
+    //QMetaObject::invokeMethod(&player, "playStart", Qt::ConnectionType::QueuedConnection);
+   // playerThread.start();
+    player.playStart();
+//    playerThread->start();
 }
 
-void ModlandPlayer::StateChanged(Phonon::State newState, Phonon::State /* oldState */)
-{
-    qDebug() << "ModlandPlayer::StateChanged()";
 
-    switch (newState)
-    {
-	case Phonon::ErrorState:
-	    if (mediaObject->errorType() == Phonon::FatalError)
-	    {
-//                QMessageBox::warning(mainUI, tr("Fatal Error"), mediaObject->errorString());
-	    }
-	    else
-	    {
-//                QMessageBox::warning(mainUI, tr("Error"), mediaObject->errorString());
-	    }
-	    break;
-//        case Phonon::PlayingState:
-//            PlayButton->setEnabled(false);
-//            PauseButton->setEnabled(true);
-//            StopButton->setEnabled(true);
-//            break;
-//        case Phonon::StoppedState:
-//            StopButton->setEnabled(false);
-//            PlayButton->setEnabled(true);
-//            PauseButton->setEnabled(false);
-//            break;
-//        case Phonon::PausedState:
-//            PauseButton->setEnabled(false);
-//            StopButton->setEnabled(true);
-//            PlayButton->setEnabled(true);
-//            break;
-	case Phonon::BufferingState:
-	    break;
-	default:
-	    ;
-    }
+
+void ModlandPlayer::JustPlay(QByteArray file)
+{
+    qDebug() << "ModlandPlayer::JustPlay()";
+
+    //struct xmp_module_info mi;
+
+    //QByteArray ba = fileName.toLocal8Bit();
+    //xmp_load_module(xmp_ctx, ba.data());
+    //QMetaObject::invokeMethod(&player, "load", Qt::ConnectionType::QueuedConnection, Q_ARG(QString, fileName));
+    player.loadFromData(file);
+    /* Show module data */
+
+    //xmp_get_module_info(xmp_ctx, &mi);
+    UI_SetSongInfo();
+
+    StopPlayerThread();
+
+    //qDebug() << QThread::currentThread();
+    //QMetaObject::invokeMethod(&player, "playStart", Qt::ConnectionType::QueuedConnection);
+   // playerThread.start();
+    player.playStart();
+//    playerThread->start();
 }
 
 void ModlandPlayer::PlaySelected(QListWidgetItem* selectedItem)
@@ -141,23 +163,31 @@ void ModlandPlayer::PopulateSongs(QListWidgetItem* selectedItem)
 {
     qDebug() << "ModlandPlayer::PopulateSongs()";
 
-    CurrentAuthor = selectedItem->text();
-    qDebug() << "SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'";
-    QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
+        CurrentAuthor = selectedItem->text();
+        QSqlQuery query("SELECT id FROM authors WHERE title = '" + CurrentAuthor + "'");
 
-    query.first();
-    query.exec("SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title");
+        query.first();
+        query.exec("SELECT s.filename, s.title FROM songs s, song_author_map m WHERE s.id = m.song_id AND m.author_id = " + query.value(0).toString() + " ORDER BY title COLLATE NOCASE ASC");
 
-    qDebug() << "\t" << "PopulateSongs - switching to author: " << CurrentAuthor;
+        //songsDetails.clear();
+        QStringList songs;
+        QStringList details;
+        while (query.next()) {
+        songs << query.value(0).toString(); //.section(".", -1000, -2);
 
-    qDebug() << "\t" << "SELECT title FROM songs WHERE author_id = " + query.value(0).toString() + " ORDER BY title";
+        details << query.value(0).toString();
+        details << query.value(1).toString();
+        //songsDetails.append(details);
+        details.clear();
+        }
 
-    QStringList songs;
-    while (query.next()) {
-	songs << query.value(0).toString().remove(QRegExp(".mod$"));
-    }
+        UI_PopulateSongsList(songs);
+}
 
-    UI_PopulateSongsList(songs);
+void ModlandPlayer::UI_UpdatePosition(int pos)
+{
+    qDebug() << "update position: " << pos;
+    mainUI->playBar->setValue(pos);
 }
 
 void ModlandPlayer::UI_PopulateSongsList(QStringList songs)
@@ -173,7 +203,25 @@ bool ModlandPlayer::UI_IsItLastSong()
 
 QListWidgetItem* ModlandPlayer::UI_NextAuthorName()
 {
-    return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
+    if(mainUI->AuthorsList->currentRow() < mainUI->AuthorsList->count() - 1)
+    {
+            return mainUI->AuthorsList->item(mainUI->AuthorsList->currentRow() + 1);
+    }
+    else
+    {
+            return mainUI->AuthorsList->item(0);
+    }
+}
+
+void ModlandPlayer::StopPlayerThread()
+{
+    player.playStop();
+    /*if( playerThread->isRunning() )
+    {
+        playerThread->requestInterruption();
+        playerThread->wait(200);
+        xmp_end_player(xmp_ctx);
+    }*/
 }
 
 void ModlandPlayer::FinishedPlaying()
@@ -186,7 +234,14 @@ void ModlandPlayer::FinishedPlaying()
     {
 	PopulateSongs(UI_NextAuthorName());
 	selectedItem =  mainUI->SongsList->item(0);
-	mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
+	if(mainUI->AuthorsList->currentRow() < mainUI->AuthorsList->count())
+        {
+	        mainUI->AuthorsList->setCurrentRow(mainUI->AuthorsList->currentRow() + 1);
+	}
+        else
+        {
+	        mainUI->AuthorsList->setCurrentRow(0);
+        }
 	mainUI->SongsList->setCurrentRow(0);
     }
     else
@@ -195,22 +250,7 @@ void ModlandPlayer::FinishedPlaying()
 	mainUI->SongsList->setCurrentRow(mainUI->SongsList->currentRow() + 1);
     }
 
-    qDebug() << "\t" << "play?";
     PlaySelected(selectedItem);
-}
-
-void ModlandPlayer::UI_TotalTime(qint64 time)
-{
-    QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
-
-    mainUI->TotalTimeLabel->setText(displayTime.toString("mm:ss"));
-}
-
-void ModlandPlayer::UI_tick(qint64 time)
-{
-    QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
-
-    mainUI->TimeLabel->setText(displayTime.toString("mm:ss"));
 }
 
 void ModlandPlayer::FetchSong(QString fileName)
@@ -220,23 +260,23 @@ void ModlandPlayer::FetchSong(QString fileName)
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
 
-    QString urlSong = "http://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/Protracker/" + fileName ;
+    QString urlSong = "http://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/" + fileName ;
 
     qDebug() << "\t" << "FetchSong - module to fetch: " << urlSong ;
 
     QNetworkReply* reply = manager->get(QNetworkRequest(QUrl(urlSong)));
 
-    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));  
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(handleProgressBar(qint64, qint64)));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleError(QNetworkReply::NetworkError)));
-    progressDialog->setLabelText("Fetching " + fileName);
-    progressDialog->show();
+    mainUI->progressBar->setFormat("Fetching " + fileName);
+    mainUI->progressBar->show();
     qDebug() << "\t" << "FetchSong - end" ;
 }
 
 void ModlandPlayer::handleError(QNetworkReply::NetworkError errorcode)
 {
     qDebug() << "ModlandPlayer::handleError()";
-    progressDialog->hide();
+    mainUI->progressBar->hide();
     
     if (errorcode != QNetworkReply::NoError) 
     {
@@ -262,8 +302,8 @@ void ModlandPlayer::handleProgressBar(qint64 bytesfetched, qint64 bytestotal)
 {
     qDebug() << "ModlandPlayer::handleProgressBar()";
 
-    progressDialog->setMaximum(bytestotal);
-    progressDialog->setValue(bytesfetched);
+    mainUI->progressBar->setMaximum(bytestotal);
+    mainUI->progressBar->setValue(bytesfetched);
 }
 
 void ModlandPlayer::downloadFinished(QNetworkReply *reply)
@@ -279,7 +319,8 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
     }
     else
     {
-	QDir* katalog = new QDir();
+/*
+        QDir* katalog = new QDir();
 	katalog->mkpath(modulePath + CurrentAuthor);
 
 	QFileInfo fileinfo(url.path());
@@ -294,6 +335,8 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 	    file.close();
 
 	    qDebug() << "\t" << "downloadFinished - module fetched";
+            mainUI->progressBar->resetFormat();
+            mainUI->progressBar->reset();
 
 	    JustPlay(fileName);
 	}
@@ -301,6 +344,9 @@ void ModlandPlayer::downloadFinished(QNetworkReply *reply)
 	{
 	    qDebug() << "\t downloadFinished with error: " + file.errorString();
 	}
+    */
+        JustPlay(reply->readAll());
+        reply->close();
     }
 }
 
@@ -311,7 +357,7 @@ QString ModlandPlayer::buildModuleName(QString title, bool localName)
     if(localName)
 	fullName.append(modulePath);
 
-    fullName += CurrentAuthor + "/" + title + ".mod";
+    fullName += /*CurrentAuthor*/ + "/" + title; // + ".mod";
 
     return fullName;
 }
@@ -326,24 +372,110 @@ void ModlandPlayer::DoConnects()
 {
     qDebug() << "ModlandPlayer::DoConnects()";
 
-    mainUI->seekSlider->setMediaObject(mediaObject);
     connect(mainUI->SongsList,   SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PlaySelected(QListWidgetItem*)));
     connect(mainUI->AuthorsList, SIGNAL(itemClicked(QListWidgetItem*)), this,        SLOT(PopulateSongs(QListWidgetItem*)));
-    connect(mainUI->actionPlay,  SIGNAL(triggered()), mediaObject, SLOT(play()));
-    connect(mainUI->actionPause, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
-    connect(mainUI->actionStop,  SIGNAL(triggered()), mediaObject, SLOT(stop()));
     connect(mainUI->actionNext,  SIGNAL(triggered()), this, SLOT(FinishedPlaying()));
     connect(mainUI->actionFavorite,  SIGNAL(triggered()), this, SLOT(handleFavorite()));
 
-    connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(UI_tick(qint64)));
-    connect(mediaObject, SIGNAL(totalTimeChanged(qint64)), this, SLOT(UI_TotalTime(qint64)));
-    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-	    this, SLOT(StateChanged(Phonon::State,Phonon::State)));
-    connect(mediaObject, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+    connect(&player, SIGNAL(playFinished()), this, SLOT(FinishedPlaying()));
+    connect(&player, SIGNAL(posChanged(int)), this, SLOT(UI_UpdatePosition(int)));
 
+    //connect(playerThread, SIGNAL(finished()), this, SLOT(FinishedPlaying()));
+//    connect(playerThread, SIGNAL(finished()), playerThread, SLOT (deleteLater()));
+    //connect(playerThread, SIGNAL(setPosition(int)), this, SLOT (UI_UpdatePosition(int)));
 }
 
 void ModlandPlayer::show()
 {
     mainUI->show();
 }
+
+#if 0
+PlayThread::~PlayThread()
+{
+    audio->stop();
+    delete audio;
+}
+
+PlayThread::PlayThread(xmp_context xmp_ctxin)
+{
+    this->xmp_ctx = xmp_ctxin;
+
+    QAudioFormat format;
+    // Set up the format, eg.
+    format.setSampleRate(48000);
+    format.setChannelCount(2);
+    format.setSampleSize(16);
+    format.setCodec("audio/pcm");
+    format.setByteOrder(QAudioFormat::LittleEndian);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    if (!info.isFormatSupported(format)) {
+       qWarning() << "Raw audio format not supported by backend, cannot play audio.";
+       return;
+    }
+
+    audio = new QAudioOutput(format, this);
+    audio->setNotifyInterval(1000);
+    connect(audio, SIGNAL(notify()), this, SLOT(audio_out_notify()));
+}
+
+void PlayThread::audio_out_notify()
+{
+    qDebug() << "Audio out notify";
+}
+
+void PlayThread::run()
+{
+    struct xmp_frame_info fi;
+
+    qDebug() << "PlayThread::run() start";
+
+    QIODevice * io = audio->start();
+
+    qDebug() << "audio->start called";
+    qDebug() << "period size: " << audio->periodSize();
+    qDebug() << "buffer size: " << audio->bufferSize();
+    qDebug() << "notify interval: " << audio->notifyInterval();
+
+    if (xmp_start_player(xmp_ctx, 48000, 0) == 0) {
+
+	    /* Play module */
+
+	    int row = -1;
+	    while (xmp_play_frame(xmp_ctx) == 0) {
+
+		    xmp_get_frame_info(xmp_ctx, &fi);
+
+           // qDebug() << "play frame received:";
+           // qDebug() << "buffer=" << (void*)fi.buffer;
+           // qDebug() << "buf_size=" << fi.buffer_size;
+
+		    if (fi.loop_count > 0)
+			    break;
+
+                    if ( QThread::currentThread()->isInterruptionRequested() )
+                    {
+                        qDebug() << "PlayThread asked to quit";
+                        break;
+                    }
+//		    sound_play(fi.buffer, fi.buffer_size);
+            while (audio->bytesFree() <= fi.buffer_size)
+            {
+                QThread::currentThread()->msleep(1);
+            }
+            io->write((const char *)fi.buffer, fi.buffer_size);
+
+
+		    if (fi.row != row) {
+                            emit(setPosition(fi.pos));
+			    row = fi.row;
+		    }
+
+	    }
+    }
+    audio->stop();
+    qDebug() << "PlayThread::run() exit";
+}
+#endif

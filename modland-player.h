@@ -14,9 +14,7 @@
 **
 ****************************************************************************/
 
-
-#include <phonon/mediaobject.h>
-#include <phonon/audiooutput.h>
+#include <xmp.h>
 
 #include <QDir>
 #include <QFileDialog>
@@ -31,8 +29,34 @@
 #include <QProgressDialog>
 #include <QErrorMessage>
 #include <QDebug>
+#include <QThread>
+#include <QAudioOutput>
 
-#include "desktopui.h"
+#include "xmplayer.h"
+
+//#include "desktopui.h"
+
+#if 0
+class PlayThread:public QThread
+{
+    Q_OBJECT
+
+    private:
+    xmp_context xmp_ctx;
+    QAudioOutput *audio;
+
+public slots:
+    void audio_out_notify();
+
+    public:
+        PlayThread(xmp_context xmp_ctx);
+        virtual ~PlayThread();
+        void run();
+
+    signals:
+        void setPosition(int position);
+};
+#endif
 
 class ModlandPlayer:public QObject
 {
@@ -46,27 +70,29 @@ class ModlandPlayer:public QObject
     public slots:
 
     private:
+    XMPlayer    player;
+    QThread     playerThread;
+
 	DesktopUI *mainUI;
-	QProgressDialog *progressDialog;
-	Phonon::MediaObject *mediaObject;
-	Phonon::MediaObject *metaInformationResolver;
-	Phonon::AudioOutput *audioOutput;
 	QString CurrentAuthor;
 	void InitializeAuthorsList();
 	void FetchSong(QString fileName);
 	void JustPlay(QString fileName);
+    void JustPlay(QByteArray file);
 	QString buildModuleName(QString title, bool localName = true);
 	void DoConnects();
 
 	void UI_PopulateAuthorsList(QStringList authors);
 	void UI_PopulateSongsList(QStringList songs);
-	void UI_SetSongInfo(QString title);
+    void UI_SetSongInfo();
 	bool UI_IsItLastSong();
 	QListWidgetItem* UI_NextAuthorName();
+	void StopPlayerThread();
 	QString modulePath;
+    //xmp_context xmp_ctx;
+    //QThread *playerThread;
 
     private slots:
-    void StateChanged(Phonon::State newState, Phonon::State oldState);
     void PlaySelected(QListWidgetItem* selectedItem);
     void PopulateSongs(QListWidgetItem* selectedItem);
     void FinishedPlaying();
@@ -74,6 +100,5 @@ class ModlandPlayer:public QObject
     void handleProgressBar(qint64 bytesfetched, qint64 bytestotal);
     void handleError(QNetworkReply::NetworkError code);
     void handleFavorite();
-    void UI_tick(qint64 time);
-    void UI_TotalTime(qint64 time);
+    void UI_UpdatePosition(int pos);
 };

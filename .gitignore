@@ -1,9 +1,10 @@
+tools/allmods*
 modland-player
 *.o
 Makefile
 moc_*
 ui_*
 .*
+*.pro.user
 modules
-tools
 utwory.sqlite
