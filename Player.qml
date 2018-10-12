@@ -53,32 +53,32 @@ PlayerForm {
         }
 
         onMixChanged: {
-            slider1.value = player.mix / 100;
+            sliderSeparation.value = player.mix / 100;
         }
         onVolumeChanged: {
-            slider.value = player.volume / 100;
+            sliderVolume.value = player.volume / 100;
         }
     }
 
-    slider {
+    sliderVolume {
         onValueChanged: {
-            player.volume = slider.value * 100;
+            player.volume = sliderVolume.value * 100;
         }
     }
 
-    slider1 {
+    sliderSeparation {
         onValueChanged: {
-            player.mix = slider1.value * 100;
+            player.mix = sliderSeparation.value * 100;
         }
     }
 
-    button {
+    buttonPlay {
         onClicked: {
             player.playStart()
         }
     }
 
-    button1 {
+    buttonStop {
         onClicked: {
             player.playStop()
         }

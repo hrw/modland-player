@@ -18,7 +18,7 @@ Item {
     }
 
     ListView {
-        id: listView
+        id: listViewInstruments
         anchors.bottomMargin: 8
         anchors.leftMargin: 8
         anchors.rightMargin: 8

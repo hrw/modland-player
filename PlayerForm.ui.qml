@@ -6,15 +6,15 @@ import QtQuick.Extras 1.4
 Item {
     width: 250
     height: 400
+    property alias sliderVolume: sliderVolume
+    property alias buttonStop: buttonStop
+    property alias buttonPlay: buttonPlay
     property alias labelPos: labelPos
     property alias labelBPM: labelBPM
     property alias labelTitle: labelTitle
-    property alias slider1: slider1
-    property alias slider: slider
+    property alias sliderSeparation: sliderSeparation
     property alias progressBar: progressBar
     property alias text1: text1
-    property alias button1: button1
-    property alias button: button
     property alias signalRight: signalRight
     property alias signalLeft: signalLeft
 
@@ -28,7 +28,7 @@ Item {
     }
 
     Button {
-        id: button
+        id: buttonPlay
         x: 54
         y: 162
         width: 40
@@ -39,7 +39,7 @@ Item {
     }
 
     Button {
-        id: button1
+        id: buttonStop
         x: 146
         y: 162
         width: 40
@@ -74,7 +74,7 @@ Item {
     }
 
     Slider {
-        id: slider
+        id: sliderVolume
         x: 10
         y: 282
         width: 222
@@ -85,7 +85,7 @@ Item {
     }
 
     Slider {
-        id: slider1
+        id: sliderSeparation
         x: 10
         y: 352
         width: 222
@@ -95,7 +95,7 @@ Item {
     }
 
     Button {
-        id: button2
+        id: buttonPause
         x: 100
         y: 162
         width: 40
@@ -107,7 +107,7 @@ Item {
     }
 
     Button {
-        id: button3
+        id: buttonPrev
         x: 8
         y: 162
         width: 40
@@ -119,7 +119,7 @@ Item {
     }
 
     Button {
-        id: button4
+        id: buttonNext
         x: 192
         y: 162
         width: 40

@@ -3,29 +3,29 @@ import QtQuick 2.4
 PlaylistForm {
     mouseArea {
         onClicked: {
-            var ind = Math.floor((mouse.y + listView.contentY)/16)
+            var ind = Math.floor((mouse.y + listViewAuthors.contentY)/16)
 
-            if (ind < listView.count)
-                listView.currentIndex = ind
+            if (ind < listViewAuthors.count)
+                listViewAuthors.currentIndex = ind
         }
     }
 
-    listView.onCurrentIndexChanged: {
-        listView1.model = database.getAuthorsModules(listView.currentIndex)
+    listViewAuthors.onCurrentIndexChanged: {
+        listViewSongs.model = database.getAuthorsModules(listViewAuthors.currentIndex)
     }
 
     mouseArea1 {
         onClicked: {
-            var ind = Math.floor((mouse.y + listView1.contentY)/16)
+            var ind = Math.floor((mouse.y + listViewSongs.contentY)/16)
 
-            if (ind < listView1.count)
-                listView1.currentIndex = ind
+            if (ind < listViewSongs.count)
+                listViewSongs.currentIndex = ind
         }
     }
 
-    listView1.onCurrentIndexChanged: {
-        var mod = listView1.currentItem.modlabel.text
-        var aut = listView.currentItem.authorlabel.text
+    listViewSongs.onCurrentIndexChanged: {
+        var mod = listViewSongs.currentItem.modlabel.text
+        var aut = listViewAuthors.currentItem.authorlabel.text
 
         console.log(aut + ": " + mod);
 
@@ -39,10 +39,10 @@ PlaylistForm {
         onPlayFinished: {
             console.log("player finished");
 
-            if (listView1.currentIndex == listView1.count - 1) {
-                listView.currentIndex++
+            if (listViewSongs.currentIndex == listViewSongs.count - 1) {
+                listViewAuthors.currentIndex++
             } else {
-                listView1.currentIndex++;
+                listViewSongs.currentIndex++;
             }
         }
     }

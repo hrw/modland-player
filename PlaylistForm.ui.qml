@@ -5,8 +5,8 @@ Item {
     id: item1
     width: 350
     height: 400
-    property alias listView1: listView1
-    property alias listView: listView
+    property alias listViewSongs: listViewSongs
+    property alias listViewAuthors: listViewAuthors
     property alias mouseArea: mouseArea
     property alias mouseArea1: mouseArea1
 
@@ -20,7 +20,7 @@ Item {
     }
 
     ListView {
-        id: listView
+        id: listViewAuthors
         clip: true
         anchors.right: parent.right
         anchors.rightMargin: 8
@@ -69,7 +69,7 @@ Item {
     }
 
     ListView {
-        id: listView1
+        id: listViewSongs
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.left: parent.left
