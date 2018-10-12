@@ -2,12 +2,10 @@ This is source of my Protracker modules player.
 
 Features:
 - modules are fetched from MODland archive using HTTP
-- separate UI for desktop
-- separate UI for Maemo5 (now removed)
-- selection of UI is done by platform (req Qt 4.6 on Maemo5)
+- UI rewritten in QML
 
 Requirements:
-- GStreamer modplug plugin - not present under Maemo5
+- libxmp
 
 Parts of code based on following Qt examples:
 - Phonon Music Player
