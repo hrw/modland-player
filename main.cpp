@@ -20,8 +20,12 @@
 #include <QQuickStyle>
 #include <QDir>
 #include <QFontDatabase>
+#include <QNetworkAccessManager>
 
 #include "xmplayer.h"
+#include "modland.h"
+
+QNetworkAccessManager manager;
 
 int main(int argc, char *argv[])
 {
@@ -39,6 +43,7 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Material");
 
     qmlRegisterType<XMPlayer>("XMPlayer", 1, 0, "XMPlayer");
+    qmlRegisterType<Modland>("XMPlayer", 1, 0, "Modland");
 
     app.setApplicationName("Modland Player");
 

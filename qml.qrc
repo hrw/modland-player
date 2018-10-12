@@ -10,5 +10,6 @@
         <file>InstrumentsForm.ui.qml</file>
         <file>Playlist.qml</file>
         <file>PlaylistForm.ui.qml</file>
+        <file>fonts/heydings_controls.ttf</file>
     </qresource>
 </RCC>
