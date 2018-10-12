@@ -62,8 +62,10 @@ QByteArray Modland::downloadModule(QString author, QString module)
     qDebug() << fileName;
 
     QString urlSong = "http://ftp.amigascne.org/mirrors/ftp.modland.com/pub/modules/" + fileName ;
+    QString urlEnc = urlSong.replace("#", "%23");
+    QUrl url = QUrl(urlEnc);
 
-    reply =  manager.get(QNetworkRequest(QUrl(urlSong)));
+    reply =  manager.get(QNetworkRequest(url));
 
     qDebug() << reply;
 
