@@ -32,8 +32,10 @@ Item {
         x: 54
         y: 162
         width: 40
-        height: 40
-        text: qsTr("▶️")
+        height: 50
+        text: qsTr("P")
+        font.pixelSize: 18
+        font.family: "Heydings Controls"
     }
 
     Button {
@@ -41,8 +43,10 @@ Item {
         x: 146
         y: 162
         width: 40
-        height: 40
-        text: qsTr("■")
+        height: 50
+        text: qsTr("S")
+        font.pixelSize: 18
+        font.family: "Heydings Controls"
     }
 
     Label {
@@ -95,8 +99,11 @@ Item {
         x: 100
         y: 162
         width: 40
-        height: 40
-        text: qsTr("Ⅱ")
+        height: 50
+        text: qsTr("u")
+        font.family: "Heydings Controls"
+        font.pixelSize: 18
+        font.capitalization: Font.MixedCase
     }
 
     Button {
@@ -104,9 +111,11 @@ Item {
         x: 8
         y: 162
         width: 40
-        height: 40
-        text: qsTr("⏮️")
-        display: AbstractButton.TextOnly
+        height: 50
+        text: qsTr("p")
+        font.family: "Heydings Controls"
+        font.pixelSize: 18
+        font.capitalization: Font.MixedCase
     }
 
     Button {
@@ -114,8 +123,11 @@ Item {
         x: 192
         y: 162
         width: 40
-        height: 40
-        text: qsTr("⏭")
+        height: 50
+        text: qsTr("j")
+        font.family: "Heydings Controls"
+        font.pixelSize: 18
+        font.capitalization: Font.MixedCase
     }
 
     Label {
