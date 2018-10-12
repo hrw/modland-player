@@ -11,6 +11,8 @@ Item {
     property alias buttonStop: buttonStop
     property alias buttonPause: buttonPause
     property alias buttonPlay: buttonPlay
+    property alias buttonNext: buttonNext
+    property alias buttonPrev: buttonPrev
     property alias labelPos: labelPos
     property alias labelBPM: labelBPM
     property alias labelTitle: labelTitle

@@ -29,6 +29,26 @@ ApplicationWindow {
     RowLayout {
         Player {
             id: playerView
+
+            buttonNext {
+                onClicked: {
+                    if (playlist.listViewSongs.currentIndex == playlist.listViewSongs.count - 1) {
+                        playlist.listViewAuthors.currentIndex++
+                    } else {
+                        playlist.listViewSongs.currentIndex++;
+                    }
+                }
+            }
+
+            buttonPrev {
+                onClicked: {
+                    if (playlist.listViewSongs.currentIndex == 0) {
+                        playlist.listViewAuthors.currentIndex--
+                    } else {
+                        playlist.listViewSongs.currentIndex--
+                    }
+                }
+            }
         }
 
         Instruments {
