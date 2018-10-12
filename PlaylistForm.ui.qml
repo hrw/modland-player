@@ -3,7 +3,7 @@ import QtQuick.Controls 2.3
 
 Item {
     id: item1
-    width: 400
+    width: 350
     height: 400
     property alias listView1: listView1
     property alias listView: listView
@@ -37,7 +37,7 @@ Item {
             radius: 3
         }
         delegate: Row {
-            width: parent.width - 64
+            width: parent.width - 16
             height: 16
             property alias authorlabel: authorlabel
             Label {
@@ -54,6 +54,9 @@ Item {
             anchors.bottomMargin: 0
             anchors.fill: parent
         }
+
+        ScrollBar.vertical: ScrollBar {
+        }
     }
 
     Label {
@@ -67,13 +70,17 @@ Item {
 
     ListView {
         id: listView1
-        x: 8
-        y: 232
-        width: 384
-        height: 160
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
+        anchors.top: parent.top
+        anchors.topMargin: 232
         clip: true
         delegate: Row {
-            width: parent.width - 64
+            width: parent.width - 16
             height: 16
             property alias modlabel: modlabel
             Label {
@@ -94,8 +101,16 @@ Item {
 
         MouseArea {
             id: mouseArea1
-            anchors.bottomMargin: 0
             anchors.fill: parent
+        }
+
+        ScrollBar.vertical: ScrollBar {
         }
     }
 }
+
+
+/*##^## Designer {
+    D{i:8;anchors_height:160;anchors_width:334;anchors_x:8;anchors_y:232}
+}
+ ##^##*/
