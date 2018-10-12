@@ -21,4 +21,6 @@ DISTFILES +=
 RESOURCES += \
     qml.qrc
 
-QMAKE_LFLAGS += -fuse-ld=gold
+unix:!macx {
+    QMAKE_LFLAGS += -fuse-ld=gold
+}
