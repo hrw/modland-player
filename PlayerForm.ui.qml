@@ -9,6 +9,8 @@ Item {
     property alias sliderVolume: sliderVolume
     property alias buttonStop: buttonStop
     property alias buttonPlay: buttonPlay
+    property alias buttonNext: buttonNext
+    property alias buttonPrev: buttonPrev
     property alias labelPos: labelPos
     property alias labelBPM: labelBPM
     property alias labelTitle: labelTitle
