@@ -22,6 +22,10 @@ ApplicationWindow {
         id: player
     }
 
+    Modland {
+        id: database
+    }
+
     RowLayout {
         Player {
             id: playerView
@@ -39,7 +43,7 @@ ApplicationWindow {
     Component.onCompleted: {
 
         //player.load("/Users/michal/a sleep so deep.mod")
-        player.load("/Users/michal/Downloads/AceMan - El Plato De Pato.xm")
-        player.playStart()
+        //player.load("/Users/michal/Downloads/AceMan - El Plato De Pato.xm")
+        //player.playStart()
     }
 }
