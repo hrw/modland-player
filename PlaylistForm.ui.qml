@@ -5,8 +5,10 @@ Item {
     id: item1
     width: 400
     height: 400
+    property alias listView1: listView1
     property alias listView: listView
     property alias mouseArea: mouseArea
+    property alias mouseArea1: mouseArea1
 
     Label {
         id: label
@@ -27,53 +29,26 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 32
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 195
+        anchors.bottomMargin: 210
         highlightFollowsCurrentItem: true
+        highlightMoveDuration: 200
         highlight: Rectangle {
-            color: "lightsteelblue"
-            radius: 5
+            color: "dimgray"
+            radius: 3
         }
-        delegate: Item {
-            x: 5
-            width: 80
-            height: 40
-            Row {
-                id: row1
-                Rectangle {
-                    width: 40
-                    height: 40
-                    color: colorCode
-                }
-
-                Text {
-                    text: name
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                spacing: 10
+        delegate: Row {
+            width: parent.width - 64
+            height: 16
+            property alias authorlabel: authorlabel
+            Label {
+                id: authorlabel
+                font.family: "Prototype"
+                font.pixelSize: 13
+                text: modelData
             }
         }
-        model: ListModel {
-            ListElement {
-                name: "Grey"
-                colorCode: "grey"
-            }
+        model: database.authors
 
-            ListElement {
-                name: "Red"
-                colorCode: "red"
-            }
-
-            ListElement {
-                name: "Blue"
-                colorCode: "blue"
-            }
-
-            ListElement {
-                name: "Green"
-                colorCode: "green"
-            }
-        }
         MouseArea {
             id: mouseArea
             anchors.bottomMargin: 0
@@ -97,46 +72,30 @@ Item {
         width: 384
         height: 160
         clip: true
-        delegate: Item {
-            x: 5
-            width: 80
-            height: 40
-            Row {
-                id: row2
-                Rectangle {
-                    width: 40
-                    height: 40
-                    color: colorCode
-                }
-
-                Text {
-                    text: name
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                spacing: 10
+        delegate: Row {
+            width: parent.width - 64
+            height: 16
+            property alias modlabel: modlabel
+            Label {
+                id: modlabel
+                font.family: "Prototype"
+                font.pixelSize: 13
+                text: modelData
             }
         }
-        model: ListModel {
-            ListElement {
-                name: "Grey"
-                colorCode: "grey"
-            }
+        model: null
 
-            ListElement {
-                name: "Red"
-                colorCode: "red"
-            }
+        highlightFollowsCurrentItem: true
+        highlightMoveDuration: 200
+        highlight: Rectangle {
+            color: "dimgray"
+            radius: 3
+        }
 
-            ListElement {
-                name: "Blue"
-                colorCode: "blue"
-            }
-
-            ListElement {
-                name: "Green"
-                colorCode: "green"
-            }
+        MouseArea {
+            id: mouseArea1
+            anchors.bottomMargin: 0
+            anchors.fill: parent
         }
     }
 }
