@@ -219,6 +219,7 @@ void XMPlayer::fetchMoreAudioData(void)
             }
             else
             {
+                m_CurrentFrameInfo.buffer = nullptr;
                 m_LastFrameFetched = true;
             }
         }
@@ -341,6 +342,7 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
                     fetchMoreAudioData();
                 else
                 {
+                    qDebug() << "last frame fetched";
                     xmp_end_player(xmp_ctx);
                     m_VULeft = 0;
                     m_VURight = 0;

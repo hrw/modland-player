@@ -36,7 +36,9 @@ PlaylistForm {
     Connections {
         target: player
 
-        onPlayerFinished: {
+        onPlayFinished: {
+            console.log("player finished");
+
             if (listView1.currentIndex == listView1.count - 1) {
                 listView.currentIndex++
             } else {

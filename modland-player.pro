@@ -8,17 +8,15 @@ DEPENDPATH += .
 INCLUDEPATH += . /usr/include/qt5/QtWidgets /usr/local/include
 
 LIBS += -L/usr/local/lib -lxmp
-QT += network sql widgets multimedia quick quickcontrols2
+QT += network sql multimedia quick quickcontrols2
 
 HEADERS += xmplayer.h \
     modland.h
 SOURCES += main.cpp xmplayer.cpp \
     modland.cpp
 CONFIG += c++1z
-#qtquickcompiler
 
 DISTFILES +=
 
 RESOURCES += \
     qml.qrc
-
