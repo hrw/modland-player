@@ -20,3 +20,5 @@ DISTFILES +=
 
 RESOURCES += \
     qml.qrc
+
+QMAKE_LFLAGS += -fuse-ld=gold
