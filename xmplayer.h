@@ -106,6 +106,7 @@ private:
     bool m_ModuleLoaded;
     bool m_LastFrameFetched;
     bool m_IgnoreIdleState;
+    bool m_Paused;
 
     QString m_Name;
     QString m_Type;

@@ -83,4 +83,10 @@ PlayerForm {
             player.playStop()
         }
     }
+
+    buttonPause {
+        onClicked: {
+            player.playPause()
+        }
+    }
 }
