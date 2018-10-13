@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.4
 
 Item {
     id: item1
@@ -56,6 +56,7 @@ Item {
         }
 
         ScrollBar.vertical: ScrollBar {
+            minimumSize: 0.1
         }
     }
 
@@ -105,12 +106,7 @@ Item {
         }
 
         ScrollBar.vertical: ScrollBar {
+            minimumSize: 0.1
         }
     }
 }
-
-
-/*##^## Designer {
-    D{i:8;anchors_height:160;anchors_width:334;anchors_x:8;anchors_y:232}
-}
- ##^##*/

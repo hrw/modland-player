@@ -10,8 +10,8 @@ PlayerForm {
         running: true
         onTriggered: {
 
-            signalLeft.width = 2 + 6*Math.round(31 * vl)
-            signalRight.width = 2 + 6*Math.round(31 * vr)
+            signalLeft.value = vl
+            signalRight.value = vr
 
             if (vl > 0.02)
                 vl = vl * 0.92

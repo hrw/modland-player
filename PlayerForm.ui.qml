@@ -2,6 +2,7 @@ import QtQuick 2.4
 import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import QtQuick.Extras 1.4
+import XMPlayer 1.0
 
 Item {
     width: 250
@@ -152,51 +153,24 @@ Item {
         font.pixelSize: 13
     }
 
-    Image {
-        id: image1
-        x: 41
-        y: 108
-        width: 191
-        height: 20
-        fillMode: Image.PreserveAspectCrop
-        source: "qrc:img/bargraph_transp_off_20.png"
-        clip: false
-    }
-
-    Image {
+    VUMeter {
         id: signalRight
-        x: 41
-        y: 108
-        width: 130
-        height: 20
-        horizontalAlignment: Image.AlignLeft
-        transformOrigin: Item.Center
-        fillMode: Image.Tile
-        source: "qrc:img/bargraph_transp_20.png"
-        clip: false
+        x: 45
+        y: 111
+        width: 185
+        height: 14
+        minimumValue: 0
+        maximumValue: 1
     }
 
-    Image {
-        id: image
-        x: 41
-        y: 87
-        width: 191
-        height: 20
-        clip: false
-        fillMode: Image.PreserveAspectCrop
-        source: "qrc:img/bargraph_transp_off_20.png"
-    }
-    Image {
+    VUMeter {
         id: signalLeft
-        x: 41
-        y: 87
-        width: 130
-        height: 20
-        transformOrigin: Item.Center
-        horizontalAlignment: Image.AlignLeft
-        fillMode: Image.Tile
-        source: "qrc:img/bargraph_transp_20.png"
-        clip: false
+        x: 45
+        y: 90
+        width: 185
+        height: 14
+        minimumValue: 0
+        maximumValue: 1
     }
 
     Label {
