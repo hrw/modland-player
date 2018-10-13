@@ -11,9 +11,11 @@ LIBS += -L/usr/local/lib -lxmp
 QT += network sql multimedia quick quickcontrols2
 
 HEADERS += xmplayer.h \
-    modland.h
+    modland.h \
+    vumeter.h
 SOURCES += main.cpp xmplayer.cpp \
-    modland.cpp
+    modland.cpp \
+    vumeter.cpp
 CONFIG += c++1z
 
 DISTFILES +=
@@ -21,4 +23,6 @@ DISTFILES +=
 RESOURCES += \
     qml.qrc
 
-QMAKE_LFLAGS += -fuse-ld=gold
+unix:!macx {
+    QMAKE_LFLAGS += -fuse-ld=gold
+}

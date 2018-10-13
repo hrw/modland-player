@@ -24,6 +24,7 @@
 
 #include "xmplayer.h"
 #include "modland.h"
+#include "vumeter.h"
 
 QNetworkAccessManager manager;
 
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<XMPlayer>("XMPlayer", 1, 0, "XMPlayer");
     qmlRegisterType<Modland>("XMPlayer", 1, 0, "Modland");
+    qmlRegisterType<VUMeter>("XMPlayer", 1, 0, "VUMeter");
 
     app.setApplicationName("Modland Player");
 
