@@ -3,7 +3,7 @@
 #include <math.h>
 #include "xmplayer.h"
 
-XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_LastFrameFetched(false)
+XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_Paused(false), m_LastFrameFetched(false)
 {
     xmp_ctx = xmp_create_context();
 
@@ -413,12 +413,12 @@ void XMPlayer::playPause()
         if(m_Paused)
         {
             m_AudioOutput->resume();
-	    m_Paused = false;
+            m_Paused = false;
         }
-	else
+        else
         {
             m_AudioOutput->suspend();
-	    m_Paused = true;
+            m_Paused = true;
         }
     }
 }
