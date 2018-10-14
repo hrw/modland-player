@@ -29,28 +29,6 @@ Item {
         value: 0.5
     }
 
-    Button {
-        id: buttonPlay
-        x: 54
-        y: 162
-        width: 40
-        height: 50
-        text: qsTr("P")
-        font.pixelSize: 18
-        font.family: "Heydings Controls"
-    }
-
-    Button {
-        id: buttonStop
-        x: 146
-        y: 162
-        width: 40
-        height: 50
-        text: qsTr("S")
-        font.pixelSize: 18
-        font.family: "Heydings Controls"
-    }
-
     Label {
         id: textTime
         x: 41
@@ -94,42 +72,6 @@ Item {
         height: 40
         orientation: Qt.Horizontal
         value: 0.5
-    }
-
-    Button {
-        id: buttonPause
-        x: 100
-        y: 162
-        width: 40
-        height: 50
-        text: qsTr("u")
-        font.family: "Heydings Controls"
-        font.pixelSize: 18
-        font.capitalization: Font.MixedCase
-    }
-
-    Button {
-        id: buttonPrev
-        x: 8
-        y: 162
-        width: 40
-        height: 50
-        text: qsTr("p")
-        font.family: "Heydings Controls"
-        font.pixelSize: 18
-        font.capitalization: Font.MixedCase
-    }
-
-    Button {
-        id: buttonNext
-        x: 192
-        y: 162
-        width: 40
-        height: 50
-        text: qsTr("j")
-        font.family: "Heydings Controls"
-        font.pixelSize: 18
-        font.capitalization: Font.MixedCase
     }
 
     Label {
@@ -208,5 +150,58 @@ Item {
         text: qsTr("Stereo separation")
         font.family: "Prototype"
         font.pixelSize: 15
+    }
+
+    RowLayout {
+        x: 8
+        y: 162
+
+        Button {
+            id: buttonPrev
+            text: qsTr("p")
+            Layout.preferredHeight: 50
+            Layout.preferredWidth: 40
+            font.family: "Heydings Controls"
+            font.pixelSize: 18
+            font.capitalization: Font.MixedCase
+        }
+
+        Button {
+            id: buttonPlay
+            text: qsTr("P")
+            Layout.preferredHeight: 50
+            Layout.preferredWidth: 40
+            font.pixelSize: 18
+            font.family: "Heydings Controls"
+        }
+
+        Button {
+            id: buttonPause
+            text: qsTr("u")
+            Layout.preferredHeight: 50
+            Layout.preferredWidth: 40
+            font.family: "Heydings Controls"
+            font.pixelSize: 18
+            font.capitalization: Font.MixedCase
+        }
+
+        Button {
+            id: buttonStop
+            text: qsTr("S")
+            Layout.preferredHeight: 50
+            Layout.preferredWidth: 40
+            font.pixelSize: 18
+            font.family: "Heydings Controls"
+        }
+
+        Button {
+            id: buttonNext
+            text: qsTr("j")
+            Layout.preferredHeight: 50
+            Layout.preferredWidth: 40
+            font.family: "Heydings Controls"
+            font.pixelSize: 18
+            font.capitalization: Font.MixedCase
+        }
     }
 }
