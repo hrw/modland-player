@@ -8,8 +8,6 @@ ApplicationWindow {
     width: 800
     height: 400
     visible: true
-    maximumWidth: 800
-    maximumHeight: 400
     minimumWidth: 800
     minimumHeight: 400
 
