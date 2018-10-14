@@ -1,39 +1,15 @@
 import QtQuick 2.4
 
 PlayerForm {
-    property real vl: 0
-    property real vr: 0
-
-    Timer {
-        interval: 20
-        repeat: true
-        running: true
-        onTriggered: {
-
-            signalLeft.value = vl
-            signalRight.value = vr
-
-            if (vl > 0.02)
-                vl = vl * 0.92
-            else vl = 0
-
-            if (vr > 0.02)
-                vr = vr * 0.92
-            else vr = 0
-
-        }
-    }
 
     Connections {
         target: player
 
         onVuLeftChanged: {
-            if (player.vuLeft > vl)
-                vl = player.vuLeft;
+            signalLeft.value = player.vuLeft
         }
         onVuRightChanged: {
-            if (player.vuRight > vr)
-                vr = player.vuRight
+            signalRight.value = player.vuRight
         }
         onTimeChanged: {
             var t = Math.round(player.time / 1000);
