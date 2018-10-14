@@ -40,11 +40,12 @@ Item {
             width: parent.width - 16
             height: 16
             property alias authorlabel: authorlabel
+            property int id: modelData.id
             Label {
                 id: authorlabel
                 font.family: "Prototype"
                 font.pixelSize: 13
-                text: modelData
+                text: modelData.name
             }
         }
         model: database.authors
@@ -84,14 +85,18 @@ Item {
             width: parent.width - 16
             height: 16
             property alias modlabel: modlabel
+            property int id: modelData.id
+            property int authorId: modelData.authorId
+            property string name: modelData.name
+            property string path: modelData.path
             Label {
                 id: modlabel
                 font.family: "Prototype"
                 font.pixelSize: 13
-                text: modelData
+                text: modelData.name
             }
         }
-        model: null
+        model: database.authorsModules
 
         highlightFollowsCurrentItem: true
         highlightMoveDuration: 200

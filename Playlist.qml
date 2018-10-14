@@ -11,7 +11,8 @@ PlaylistForm {
     }
 
     listViewAuthors.onCurrentIndexChanged: {
-        listViewSongs.model = database.getAuthorsModules(listViewAuthors.currentIndex)
+        database.getListForAuthor(listViewAuthors.currentItem.id)
+        listViewSongs.model = database.authorsModules
     }
 
     mouseArea1 {
@@ -24,12 +25,7 @@ PlaylistForm {
     }
 
     listViewSongs.onCurrentIndexChanged: {
-        var mod = listViewSongs.currentItem.modlabel.text
-        var aut = listViewAuthors.currentItem.authorlabel.text
-
-        console.log(aut + ": " + mod);
-
-        player.loadFromData(database.downloadModule(aut, mod))
+        player.loadFromData(database.downloadModule(listViewSongs.currentItem.path))
         player.playStart()
     }
 

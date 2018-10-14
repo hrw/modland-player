@@ -14,50 +14,36 @@ Modland::Modland(QObject *parent) : QObject(parent)
     m_Database.setDatabaseName("utwory.sqlite");
     m_Database.open();
 
-    QSqlQuery query("SELECT id, title FROM authors ORDER BY title COLLATE NOCASE ASC");
+    QSqlQuery query("SELECT id, title FROM authors ORDER BY RANDOM() COLLATE NOCASE ASC");
 
     while (query.next()) {
-        m_Authors.append(query.value(1).toString());
+        m_Authors.append(new AuthorObject(query.value(0).toInt(), query.value(1).toString()));
     }
 
     emit authorsChanged();
 }
 
-QStringList Modland::getAuthorsModules(QString author)
+void Modland::getListForAuthor(int authorId)
 {
-    QStringList modules;
-
-    QSqlQuery query("SELECT id FROM authors WHERE title = '" + author + "'");
-
-            query.first();
-    qDebug() << query.value(0).toString();
-
-    query.exec("SELECT s.filename, s.title FROM songs s, song_author_map m WHERE s.id = m.song_id AND m.author_id = " +
-               query.value(0).toString() + " ORDER BY title COLLATE NOCASE ASC");
-
-    while (query.next()) {
-        QStringList path = query.value(0).toString().split('/');
-        modules.append(path[0] + "/" + path[2]);
+    while (!m_AuthorsModules.isEmpty()) {
+        ModuleObject *module = static_cast<ModuleObject *>(m_AuthorsModules.takeLast());
+        delete module;
     }
 
-    qDebug() << modules;
+    qDebug() << "Modland:getListForAuthor(" << authorId << ")";
 
-    return modules;
-}
+    QSqlQuery query(QString("SELECT s.id, s.filename, s.title FROM songs s, song_author_map m WHERE s.id = m.song_id AND m.author_id = %1 ORDER BY title COLLATE NOCASE ASC").arg(authorId));
 
-QStringList Modland::getAuthorsModules(int authorIndex)
-{
-    return getAuthorsModules(m_Authors[authorIndex]);
+    while (query.next()) {
+        m_AuthorsModules.append(new ModuleObject(query.value(0).toInt(), authorId, query.value(2).toString().section(".", 0, -2), query.value(1).toString()));
+    }
 }
 
 #include <QCoreApplication>
 
-QByteArray Modland::downloadModule(QString author, QString module)
+QByteArray Modland::downloadModule(QString fileName)
 {
-    QStringList list = module.split('/');
     QNetworkReply * reply;
-    list.insert(1, author);
-    QString fileName = list.join('/');
 
     qDebug() << fileName;
 
@@ -77,4 +63,17 @@ QByteArray Modland::downloadModule(QString author, QString module)
     QByteArray data = reply->readAll();
 
     return data;
+}
+
+Modland::~Modland()
+{
+    while (!m_AuthorsModules.isEmpty()) {
+        ModuleObject *module = static_cast<ModuleObject *>(m_AuthorsModules.takeLast());
+        delete module;
+    }
+
+    while (!m_Authors.isEmpty()) {
+        AuthorObject *author = static_cast<AuthorObject *>(m_Authors.takeLast());
+        delete author;
+    }
 }
