@@ -57,7 +57,7 @@ Item {
         y: 30
         width: 191
         height: 49
-        text: qsTr("Text")
+        text: qsTr("0:00")
         font.family: "Prototype"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignRight
@@ -70,7 +70,7 @@ Item {
         y: 8
         width: 232
         height: 16
-        text: qsTr("Label")
+        text: qsTr("")
         font.pixelSize: 15
         font.family: "Prototype"
     }
