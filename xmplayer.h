@@ -104,9 +104,9 @@ private:
     QIODevice *m_AudioStream;
     QAudioFormat m_AudioFormat;
     bool m_ModuleLoaded;
+    bool m_Paused;
     bool m_LastFrameFetched;
     bool m_IgnoreIdleState;
-    bool m_Paused;
 
     QString m_Name;
     QString m_Type;
