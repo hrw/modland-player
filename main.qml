@@ -25,8 +25,10 @@ ApplicationWindow {
     }
 
     RowLayout {
+        anchors.fill: parent
         Player {
             id: playerView
+            Layout.fillHeight: true
 
             buttonNext {
                 onClicked: {
@@ -51,10 +53,14 @@ ApplicationWindow {
 
         Instruments {
             id: instrumentView
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
         Playlist {
             id: playlist
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignRight | Qt.AlignTop
         }
     }
 
