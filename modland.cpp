@@ -36,8 +36,7 @@ QStringList Modland::getAuthorsModules(QString author)
                query.value(0).toString() + " ORDER BY title COLLATE NOCASE ASC");
 
     while (query.next()) {
-        QStringList path = query.value(0).toString().split('/');
-        modules.append(path[0] + "/" + path[2]);
+        modules.append(query.value(0).toString());
     }
 
     qDebug() << modules;
@@ -54,10 +53,8 @@ QStringList Modland::getAuthorsModules(int authorIndex)
 
 QByteArray Modland::downloadModule(QString author, QString module)
 {
-    QStringList list = module.split('/');
     QNetworkReply * reply;
-    list.insert(1, author);
-    QString fileName = list.join('/');
+    QString fileName = module;
 
     qDebug() << fileName;
 
@@ -65,6 +62,7 @@ QByteArray Modland::downloadModule(QString author, QString module)
     QString urlEnc = urlSong.replace("#", "%23");
     QUrl url = QUrl(urlEnc);
 
+    qDebug() << urlEnc;
     reply =  manager.get(QNetworkRequest(url));
 
     qDebug() << reply;
