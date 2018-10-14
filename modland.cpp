@@ -32,11 +32,11 @@ QStringList Modland::getAuthorsModules(QString author)
             query.first();
     qDebug() << query.value(0).toString();
 
-    query.exec("SELECT s.filename, s.title FROM songs s, song_author_map m WHERE s.id = m.song_id AND m.author_id = " +
+    query.exec("SELECT s.title FROM songs s, song_author_map m WHERE s.id = m.song_id AND m.author_id = " +
                query.value(0).toString() + " ORDER BY title COLLATE NOCASE ASC");
 
     while (query.next()) {
-        modules.append(query.value(0).toString());
+        modules.append(query.value(0).toString().section(".", 0, -2));
     }
 
     qDebug() << modules;
@@ -54,7 +54,15 @@ QStringList Modland::getAuthorsModules(int authorIndex)
 QByteArray Modland::downloadModule(QString author, QString module)
 {
     QNetworkReply * reply;
-    QString fileName = module;
+
+    QSqlQuery query("SELECT s.filename "
+                    "FROM songs s, song_author_map m, authors a "
+                    "WHERE a.title = '" + author +
+                    "' AND s.title LIKE '" + module +
+                    "%' AND s.id = m.song_id AND m.author_id = a.id");
+
+    query.first();
+    QString fileName = query.value(0).toString();
 
     qDebug() << fileName;
 
