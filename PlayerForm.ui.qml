@@ -5,6 +5,7 @@ import QtQuick.Extras 1.4
 import XMPlayer 1.0
 
 Item {
+    id: item1
     width: 250
     height: 400
     property alias sliderVolume: sliderVolume
@@ -52,28 +53,6 @@ Item {
         font.pixelSize: 15
         font.family: "Prototype"
     }
-
-    Slider {
-        id: sliderVolume
-        x: 10
-        y: 282
-        width: 222
-        height: 40
-        orientation: Qt.Horizontal
-        to: 1
-        value: 1
-    }
-
-    Slider {
-        id: sliderSeparation
-        x: 10
-        y: 352
-        width: 222
-        height: 40
-        orientation: Qt.Horizontal
-        value: 0.5
-    }
-
     Label {
         id: label1
         x: 10
@@ -134,27 +113,40 @@ Item {
         font.family: "Prototype"
     }
 
-    Label {
-        id: label
+    ColumnLayout {
         x: 10
-        y: 258
-        text: qsTr("Master volume")
-        font.family: "Prototype"
-        font.pixelSize: 15
-    }
+        y: 336
+        width: 250
+        anchors.horizontalCenterOffset: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+        transformOrigin: Item.Center
 
-    Label {
-        id: label3
-        x: 10
-        y: 328
-        text: qsTr("Stereo separation")
-        font.family: "Prototype"
-        font.pixelSize: 15
+        Label {
+            id: label3
+            x: 10
+            y: 328
+            text: qsTr("Stereo separation")
+            font.family: "Prototype"
+            font.pixelSize: 15
+        }
+
+        Slider {
+            id: sliderSeparation
+            x: 10
+            y: 352
+            width: 222
+            height: 40
+            Layout.fillWidth: true
+            orientation: Qt.Horizontal
+            value: 0.5
+        }
     }
 
     RowLayout {
-        x: 8
+        x: 10
         y: 162
+        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenter: parent.horizontalCenter
 
         Button {
             id: buttonPrev
@@ -202,6 +194,31 @@ Item {
             font.family: "Heydings Controls"
             font.pixelSize: 18
             font.capitalization: Font.MixedCase
+        }
+    }
+
+    ColumnLayout {
+        x: 10
+        y: 258
+        width: 250
+        anchors.horizontalCenterOffset: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Label {
+            id: label
+            text: qsTr("Master volume")
+            font.family: "Prototype"
+            font.pixelSize: 15
+        }
+
+        Slider {
+            id: sliderVolume
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            Layout.preferredWidth: 222
+            orientation: Qt.Horizontal
+            to: 1
+            value: 1
         }
     }
 }
