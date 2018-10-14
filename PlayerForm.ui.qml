@@ -9,6 +9,7 @@ Item {
     height: 400
     property alias sliderVolume: sliderVolume
     property alias buttonStop: buttonStop
+    property alias buttonPause: buttonPause
     property alias buttonPlay: buttonPlay
     property alias labelPos: labelPos
     property alias labelBPM: labelBPM

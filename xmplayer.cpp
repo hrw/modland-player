@@ -391,6 +391,7 @@ void XMPlayer::playStart()
         fetchMoreAudioData();
 
         emit playStarted();
+        m_Paused = false;
     }
 }
 
@@ -399,14 +400,26 @@ void XMPlayer::playStop()
     if (m_ModuleLoaded && m_AudioStream)
     {
         m_AudioOutput->stop();
+        m_Paused = false;
     }
 }
 
 void XMPlayer::playPause()
 {
+    qDebug() << "playPause() " << m_Paused;
+
     if (m_ModuleLoaded && m_AudioStream)
     {
-        m_AudioOutput->suspend();
+        if(m_Paused)
+        {
+            m_AudioOutput->resume();
+	    m_Paused = false;
+        }
+	else
+        {
+            m_AudioOutput->suspend();
+	    m_Paused = true;
+        }
     }
 }
 
@@ -415,5 +428,6 @@ void XMPlayer::playResume()
     if (m_ModuleLoaded && m_AudioStream)
     {
         m_AudioOutput->resume();
+        m_Paused = false;
     }
 }
