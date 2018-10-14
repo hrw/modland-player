@@ -16,7 +16,7 @@ Item {
     property alias labelTitle: labelTitle
     property alias sliderSeparation: sliderSeparation
     property alias progressBar: progressBar
-    property alias text1: text1
+    property alias textTime: textTime
     property alias signalRight: signalRight
     property alias signalLeft: signalLeft
 
@@ -52,7 +52,7 @@ Item {
     }
 
     Label {
-        id: text1
+        id: textTime
         x: 41
         y: 30
         width: 191

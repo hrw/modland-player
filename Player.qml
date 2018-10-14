@@ -15,7 +15,7 @@ PlayerForm {
             var t = Math.round(player.time / 1000);
             var t_s = t % 60
             var t_m = Math.floor(t / 60)
-            text1.text = t_m + ":" + (t_s < 10 ? "0":"") + t_s.toString()
+            textTime.text = t_m + ":" + (t_s < 10 ? "0":"") + t_s.toString()
             progressBar.value = player.time / player.totalTime
         }
         onNameChanged: {
