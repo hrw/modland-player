@@ -288,7 +288,7 @@ void XMPlayer::fetchMoreAudioData(void)
             else
             {
                 m_AudioStream->write((const char *)m_CurrentFrameInfo.buffer, m_CurrentFrameInfo.buffer_size);
-                m_CurrentFrameInfo.buffer = NULL;
+                m_CurrentFrameInfo.buffer = nullptr;
                 m_CurrentFrameInfo.buffer_size = 0;
             }
 
