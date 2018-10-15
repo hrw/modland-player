@@ -33,6 +33,12 @@ class XMPlayer : public QObject
     Q_PROPERTY(QStringList instruments READ instruments NOTIFY instrumentsChanged)
 
 public:
+    enum PlayerState {
+        XMP_STOP = 1,
+        XMP_PLAY,
+        XMP_PAUSE
+    };
+
     explicit XMPlayer(QObject *parent = nullptr);
     virtual ~XMPlayer();
 
@@ -97,6 +103,7 @@ private slots:
 private:
     void releaseModule();
     void getModuleInfo();
+    void changeState(PlayerState newState);
 
     xmp_context xmp_ctx;
     struct xmp_frame_info m_CurrentFrameInfo;
@@ -104,7 +111,7 @@ private:
     QIODevice *m_AudioStream;
     QAudioFormat m_AudioFormat;
     bool m_ModuleLoaded;
-    bool m_Paused;
+    PlayerState m_State;
     bool m_LastFrameFetched;
     bool m_IgnoreIdleState;
 

@@ -3,7 +3,8 @@
 #include <math.h>
 #include "xmplayer.h"
 
-XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_Paused(false), m_LastFrameFetched(false)
+XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_State(XMP_STOP),
+        m_LastFrameFetched(false), m_Mix(50), m_Volume(100)
 {
     xmp_ctx = xmp_create_context();
 
@@ -164,7 +165,10 @@ void XMPlayer::setMix(int mix)
     {
         if (m_Mix != mix)
         {
-            xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, mix);
+            if (m_State != XMP_STOP)
+            {
+                xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, mix);
+            }
             m_Mix = mix;
             emit mixChanged(mix);
         }
@@ -177,7 +181,10 @@ void XMPlayer::setVolume(int vol)
     {
         if (m_Volume != vol)
         {
-            xmp_set_player(xmp_ctx, XMP_PLAYER_VOLUME, vol);
+            if (m_State != XMP_STOP)
+            {
+                xmp_set_player(xmp_ctx, XMP_PLAYER_VOLUME, vol);
+            }
             m_Volume = vol;
             emit volumeChanged(vol);
         }
@@ -186,13 +193,11 @@ void XMPlayer::setVolume(int vol)
 
 int XMPlayer::mix()
 {
-    m_Mix = xmp_get_player(xmp_ctx, XMP_PLAYER_MIX);
     return m_Mix;
 }
 
 int XMPlayer::volume()
 {
-    m_Volume = xmp_get_player(xmp_ctx, XMP_PLAYER_VOLUME);
     return m_Volume;
 }
 
@@ -378,20 +383,21 @@ void XMPlayer::playStart()
 {
     if (m_ModuleLoaded)
     {
-        m_IgnoreIdleState = true;
+        m_IgnoreIdleState = false;
         m_LastFrameFetched = false;
+        m_AudioStream = nullptr;
 
         xmp_start_player(xmp_ctx, m_AudioFormat.sampleRate(), 0);
         xmp_set_player(xmp_ctx, XMP_PLAYER_INTERP, XMP_INTERP_SPLINE);
         xmp_set_player(xmp_ctx, XMP_PLAYER_DSP, XMP_DSP_ALL);
-        setMix(50);
-        setVolume(100);
+        xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, m_Mix);
+        xmp_set_player(xmp_ctx, XMP_PLAYER_VOLUME, m_Volume);
 
         m_AudioStream = m_AudioOutput->start();
         fetchMoreAudioData();
 
         emit playStarted();
-        m_Paused = false;
+        m_State = XMP_PLAY;
     }
 }
 
@@ -400,25 +406,25 @@ void XMPlayer::playStop()
     if (m_ModuleLoaded && m_AudioStream)
     {
         m_AudioOutput->stop();
-        m_Paused = false;
+        m_State = XMP_STOP;
     }
 }
 
 void XMPlayer::playPause()
 {
-    qDebug() << "playPause() " << m_Paused;
+    qDebug() << "playPause() " << m_State;
 
     if (m_ModuleLoaded && m_AudioStream)
     {
-        if(m_Paused)
+        if(m_State == XMP_PAUSE)
         {
             m_AudioOutput->resume();
-            m_Paused = false;
+            m_State = XMP_PLAY;
         }
         else
         {
             m_AudioOutput->suspend();
-            m_Paused = true;
+            m_State = XMP_PAUSE;
         }
     }
 }
@@ -428,6 +434,17 @@ void XMPlayer::playResume()
     if (m_ModuleLoaded && m_AudioStream)
     {
         m_AudioOutput->resume();
-        m_Paused = false;
+        m_State = XMP_PLAY;
+    }
+}
+
+void XMPlayer::changeState(PlayerState newState)
+{
+    if (m_State != newState)
+    {
+
+
+
+        m_State = newState;
     }
 }
