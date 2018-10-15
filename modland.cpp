@@ -14,7 +14,7 @@ Modland::Modland(QObject *parent) : QObject(parent)
     m_Database.setDatabaseName("utwory.sqlite");
     m_Database.open();
 
-    QSqlQuery query("SELECT id, title FROM authors ORDER BY RANDOM() COLLATE NOCASE ASC");
+    QSqlQuery query("SELECT id, title FROM authors ORDER BY title COLLATE NOCASE ASC");
 
     while (query.next()) {
         m_Authors.append(new AuthorObject(query.value(0).toInt(), query.value(1).toString()));
