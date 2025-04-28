@@ -1,8 +1,9 @@
 #ifndef XMPLAYER_H
 #define XMPLAYER_H
 
+#include <QAudioFormat>
 #include <QObject>
-#include <QAudioOutput>
+#include <QAudioSink>
 #include <QThread>
 #include <xmp.h>
 
@@ -100,7 +101,7 @@ private:
 
     xmp_context xmp_ctx;
     struct xmp_frame_info m_CurrentFrameInfo;
-    QAudioOutput *m_AudioOutput;
+    QAudioSink *m_AudioSink;
     QIODevice *m_AudioStream;
     QAudioFormat m_AudioFormat;
     bool m_ModuleLoaded;

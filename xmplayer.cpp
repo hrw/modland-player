@@ -1,3 +1,4 @@
+#include <QAudioFormat>
 #include <QDebug>
 #include <QThread>
 #include <math.h>
@@ -27,20 +28,20 @@ XMPlayer::XMPlayer(QObject *parent) : QObject(parent), m_ModuleLoaded(false), m_
     // Make the audio buffer long enough to fit 100ms of sound there. This gives us
     // larger latency but avoids much more buffer underruns...
     //
-    // AudioOutput will be used to push new data from XMP to audio
-    m_AudioOutput = new QAudioOutput(m_AudioFormat, this);
-    m_AudioOutput->setNotifyInterval(10);
-    m_AudioOutput->setBufferSize(4 * m_AudioFormat.sampleRate() * 100 / 1000);
+    // AudioSink will be used to push new data from XMP to audio
+    m_AudioSink = new QAudioSink(m_AudioFormat, this);
+    m_AudioSink->setNotifyInterval(10);
+    m_AudioSink->setBufferSize(4 * m_AudioFormat.sampleRate() * 100 / 1000);
 
-    connect(m_AudioOutput, SIGNAL(notify()), this, SLOT(fetchMoreAudioData()));
-    connect(m_AudioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(audioStateChanged(QAudio::State)));
+    connect(m_AudioSink, SIGNAL(notify()), this, SLOT(fetchMoreAudioData()));
+    connect(m_AudioSink, SIGNAL(stateChanged(QAudio::State)), this, SLOT(audioStateChanged(QAudio::State)));
 
     bzero(&m_CurrentFrameInfo, sizeof(m_CurrentFrameInfo));
 }
 
 XMPlayer::~XMPlayer()
 {
-    delete m_AudioOutput;
+    delete m_AudioSink;
 
     xmp_free_context(xmp_ctx);
 }
@@ -224,13 +225,13 @@ void XMPlayer::fetchMoreAudioData(void)
         }
 
         /* Does the frame exist */
-        if (m_CurrentFrameInfo.buffer && m_AudioOutput->bytesFree() >= m_AudioOutput->periodSize())
+        if (m_CurrentFrameInfo.buffer && m_AudioSink->bytesFree() >= m_AudioSink->periodSize())
         {
             /*
              * If the buffer fits entirely, write it complete. If not, write part of it and update
              * the buffer address and size
              */
-            int freeSpace = m_AudioOutput->bytesFree();
+            int freeSpace = m_AudioSink->bytesFree();
 
             double vl = 0, vr = 0;
             int16_t *vdata = (int16_t *)m_CurrentFrameInfo.buffer;
@@ -355,8 +356,8 @@ void XMPlayer::audioStateChanged(QAudio::State newState)
 
         case QAudio::StoppedState:
             qDebug() << "stopped state";
-            if (m_AudioOutput->error() != QAudio::NoError) {
-                qDebug() << "audio error: " << m_AudioOutput->error();
+            if (m_AudioSink->error() != QAudio::NoError) {
+                qDebug() << "audio error: " << m_AudioSink->error();
             }
             m_VULeft = 0;
             m_VURight = 0;
@@ -386,7 +387,7 @@ void XMPlayer::playStart()
         xmp_set_player(xmp_ctx, XMP_PLAYER_MIX, m_Mix);
         xmp_set_player(xmp_ctx, XMP_PLAYER_VOLUME, m_Volume);
 
-        m_AudioStream = m_AudioOutput->start();
+        m_AudioStream = m_AudioSink->start();
         fetchMoreAudioData();
 
         emit playStarted();
@@ -398,7 +399,7 @@ void XMPlayer::playStop()
 {
     if (m_ModuleLoaded && m_AudioStream)
     {
-        m_AudioOutput->stop();
+        m_AudioSink->stop();
         m_Paused = false;
     }
 }
@@ -411,12 +412,12 @@ void XMPlayer::playPause()
     {
         if(m_Paused)
         {
-            m_AudioOutput->resume();
+            m_AudioSink->resume();
             m_Paused = false;
         }
         else
         {
-            m_AudioOutput->suspend();
+            m_AudioSink->suspend();
             m_Paused = true;
         }
     }
@@ -426,7 +427,7 @@ void XMPlayer::playResume()
 {
     if (m_ModuleLoaded && m_AudioStream)
     {
-        m_AudioOutput->resume();
+        m_AudioSink->resume();
         m_Paused = false;
     }
 }
